@@ -1,0 +1,20 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "ecmaFeatures": {
+      "jsx": true,
+      "experimentalObjectRestSpread": true
+    },
+    "sourceType": "module"
+  },
+  "parser": "babel-eslint",
+  "extends": "airbnb",
+  "globals": {
+    "log": true,
+    "window": true
+  },
+  "rules": {
+    "comma-dangle": ["error", "never"],
+    "no-underscore-dangle": ["error", { "allowAfterThis": true, "allowAfterSuper": true }]
+  }
+}

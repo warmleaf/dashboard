@@ -72,7 +72,7 @@ function withCssProps(dom) {
     box-flex: ${(props) => props['bofl'] || null};
     box-flex-group: ${(props) => props['boflgr'] || null};
     box-shadow: ${(props) => props['bosh'] || null};
-    box-sizing: ${(props) => props['bosi'] || null};
+    box-sizing: ${(props) => props['bosi'] || 'border-box'};
     break-after: ${(props) => props['braf'] || null};
     break-before: ${(props) => props['brbe'] || null};
     break-inside: ${(props) => props['brin'] || null};

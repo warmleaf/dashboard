@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import SortableTree from 'react-sortable-tree';
-import FileExplorerTheme from 'react-sortable-tree-theme-file-explorer';
 import theme from './theme';
 import IconFolderClose from '../../components/icon/folderclose';
 import IconCode from '../../components/icon/code';
@@ -10,61 +9,15 @@ import IconView from '../../components/icon/view';
 export default class Tree extends Component {
   constructor(props) {
     super(props);
-
+    this.isNodeMoved = null;
     this.state = {
-      treeData: [
-        {
-          name: 'myfolder',
-          title: '我的文件夾',
-          type: 'folder',
-          children: [
-            {
-              name: 'myfolder2',
-              title: '我的文件夾2',
-              type: 'folder',
-              children: [
-                {
-                  name: 'task01',
-                  title: '定時任務01',
-                  type: 'timingTask'
-                },
-                {
-                  name: 'task02',
-                  title: '定時任務02',
-                  type: 'timingTask'
-                },
-                {
-                  name: 'task01',
-                  title: '臨時任務01',
-                  type: 'tempTask'
-                }
-              ]
-            },
-            {
-              name: 'task03',
-              title: '定時任務03',
-              type: 'timingTask'
-            },
-            {
-              name: 'task02',
-              title: '臨時任務02',
-              type: 'tempTask'
-            }
-          ]
-        },
-        {
-          name: 'task04',
-          title: '定時任務04',
-          type: 'timingTask'
-        },
-        {
-          name: 'task03',
-          title: '臨時任務03',
-          type: 'tempTask'
-        }
-      ],
+      treeData: this.props.data,
       searchFocusIndex: 0
     };
+  }
+
+  componentWillReceiveProps({ data }) {
+    this.setState({ treeData: data });
   }
 
   matchIcon = (type) => {
@@ -87,15 +40,28 @@ export default class Tree extends Component {
   };
 
   render() {
-    const { searchString } = this.props;
-    const { searchFocusIndex } = this.state;
+    const { searchString, data } = this.props;
+    const { searchFocusIndex, treeData } = this.state;
     const searchMethod = ({ node, searchQuery }) =>
       searchQuery && node.title.toLowerCase().indexOf(searchQuery.toLowerCase()) > -1;
+    console.log('data =>', data)
     return (
       <SortableTree
         style={{ width: '100%' }}
-        treeData={this.state.treeData}
-        onChange={treeData => this.setState({ treeData })}
+        treeData={treeData}
+        onChange={(update) => {
+          this.setState({ treeData: update });
+        }}
+        onDragStateChanged={({ isDragging }) => {
+          if (isDragging) {
+
+          } else if (this.isNodeMoved) {
+            this.props.onChange(treeData);
+          }
+        }}
+        onMoveNode={({ prevTreeIndex, nextTreeIndex }) => {
+          this.isNodeMoved = prevTreeIndex !== nextTreeIndex;
+        }}
         theme={theme}
         generateNodeProps={rowInfo => ({
           icons: [this.matchIcon(rowInfo.node.type)]

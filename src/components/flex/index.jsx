@@ -11,6 +11,7 @@ const Flex = styled.div`
   min-height: ${props => props.mih || null};
   max-height: ${props => props.mah || null};
   background-color: ${props => props.bgc || null};
+  background: ${props => props.bg || null};
   justify-content: ${props =>
     (!props.column
       ? props.vc ? (props.vc === true ? 'center' : props.vc) : null

@@ -15,6 +15,10 @@
   },
   "rules": {
     "comma-dangle": ["error", "never"],
-    "no-underscore-dangle": ["error", { "allowAfterThis": true, "allowAfterSuper": true }]
+    "no-underscore-dangle": [
+      "error",
+      { "allowAfterThis": true, "allowAfterSuper": true }
+    ],
+    "no-param-reassign": ["error", { "props": false }]
   }
 }

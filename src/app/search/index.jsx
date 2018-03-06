@@ -7,6 +7,7 @@ import IconSearch from '../../components/icon/search';
 /* eslint-disable */
 injectGlobal`
   .search{
+    &.on,
     &:hover{
       background-color: rgba(255,255,255,.5);
     }
@@ -17,9 +18,9 @@ injectGlobal`
 `;
 /* eslint-enable */
 
-const Search = ({ ing, ...rest }) => (
+const Search = ({ ing, value, ...rest }) => (
   <Flex
-    className="search"
+    className={`search${value && value.length >= 1 ? ' on' : ''}`}
     of
     hc
     p="2px 10px"
@@ -41,6 +42,7 @@ const Search = ({ ing, ...rest }) => (
       height="100%"
       width="100%"
       placeholder="搜索..."
+      value={value}
     />
     <IconSearch color="rgba(255, 255, 255, .6)" />
   </Flex>

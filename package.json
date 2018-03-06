@@ -5,7 +5,12 @@
   "dependencies": {
     "@storybook/channels": "^3.3.12",
     "brace": "^0.11.0",
+    "classnames": "^2.2.5",
     "codemirror": "^5.34.0",
+    "d3-interpolate": "^1.1.6",
+    "default-passive-events": "^1.0.7",
+    "dom-helpers": "^3.3.1",
+    "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.5",
     "mobx": "^3.4.1",
     "mobx-react": "^4.3.5",
@@ -17,16 +22,21 @@
     "react-codemirror": "^1.0.0",
     "react-codemirror2": "^4.0.0",
     "react-contextmenu": "^2.9.2",
+    "react-dates": "^16.3.5",
+    "react-day-picker": "^7.0.7",
     "react-dom": "^16.2.0",
     "react-frame-component": "^2.0.0",
     "react-icon-base": "^2.1.2",
+    "react-infinite-calendar": "^2.3.1",
     "react-router-dom": "^4.2.2",
-    "react-scripts": "1.0.17",
+    "react-scripts": "^1.1.0",
     "react-sortable-tree": "^1.8.1",
     "react-sortable-tree-theme-file-explorer": "^1.1.2",
     "react-split-pane": "^0.1.74",
+    "react-switch": "^2.3.0",
     "react-tabs": "^2.2.1",
     "react-virtualized": "^9.18.5",
+    "shortid": "^2.2.8",
     "styled-components": "^2.2.4",
     "xlsx": "^0.11.17"
   },
@@ -34,12 +44,16 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "tunnel": "lt"
   },
   "devDependencies": {
     "@types/react": "^16.0.28",
     "@types/react-dom": "^16.0.3",
     "eslint-config-airbnb": "^16.1.0",
-    "prettier-eslint": "^8.8.1"
+    "localtunnel": "^1.8.3",
+    "mockjs": "^1.0.1-beta3",
+    "prettier-eslint": "^8.8.1",
+    "qwest": "^4.5.0"
   }
 }

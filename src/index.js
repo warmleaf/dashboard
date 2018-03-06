@@ -1,3 +1,4 @@
+import 'default-passive-events';
 import { createElement } from 'react';
 import ReactDOM from 'react-dom';
 import registerServiceWorker from './lib/registerServiceWorker';

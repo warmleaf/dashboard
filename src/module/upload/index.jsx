@@ -33,7 +33,7 @@ const Steps = withTheme(({ theme }) => (
         mari="10px"
         baco={theme.primaryColor}
       >
-          1
+        1
       </Base.Div>
       <Base.Span>上传文件</Base.Span>
     </Flex>
@@ -49,7 +49,7 @@ const Steps = withTheme(({ theme }) => (
         mari="10px"
         baco={theme.primaryColor}
       >
-          2
+        2
       </Base.Div>
       <Base.Span>导入数据</Base.Span>
     </Flex>

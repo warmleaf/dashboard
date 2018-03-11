@@ -40,13 +40,14 @@ export default class Tree extends Component {
   };
 
   render() {
-    const { searchString, data } = this.props;
+    const { searchString, data, onClick, contextId } = this.props;
     const { searchFocusIndex, treeData } = this.state;
     const searchMethod = ({ node, searchQuery }) =>
       searchQuery && node.title.toLowerCase().indexOf(searchQuery.toLowerCase()) > -1;
     console.log('data =>', data)
     return (
       <SortableTree
+        contextId={contextId}
         style={{ width: '100%' }}
         treeData={treeData}
         onChange={(update) => {
@@ -64,8 +65,10 @@ export default class Tree extends Component {
         }}
         theme={theme}
         generateNodeProps={rowInfo => ({
-          icons: [this.matchIcon(rowInfo.node.type)]
+          icons: [this.matchIcon(rowInfo.node.type)],
+          onClick: e => onClick(e, rowInfo)
         })}
+        onContextMenu={e => console.log(e)}
         searchMethod={searchMethod}
         searchQuery={searchString}
         searchFocusOffset={searchFocusIndex}

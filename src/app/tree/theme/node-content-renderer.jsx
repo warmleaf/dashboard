@@ -350,6 +350,7 @@ class FileThemeNodeContentRenderer extends Component {
       treeId, // Not needed, but preserved for other renderers
       isOver, // Not needed, but preserved for other renderers
       parentNode, // Needed for dndManager
+      contextId,
       ...otherProps
     } = this.props;
     const nodeTitle = title || node.title;
@@ -416,7 +417,7 @@ class FileThemeNodeContentRenderer extends Component {
                 })}
             />
           )}
-        <ContextMenuTrigger id="tree_context">
+        <ContextMenuTrigger id="table_context" collect={() => node}>
           <div className={`rowWrapper${!canDrag ? ' rowWrapperDragDisabled' : ''}${isSearchFocus ? ' rowSearchFocus' : ''}`}>
             {/* Set the row preview to be used during drag and drop */}
             {connectDragPreview(<div style={{ display: 'flex' }}>
@@ -444,10 +445,10 @@ class FileThemeNodeContentRenderer extends Component {
                     <span className="rowTitle">
                       {typeof nodeTitle === 'function'
                         ? nodeTitle({
-                            node,
-                            path,
-                            treeIndex
-                          })
+                          node,
+                          path,
+                          treeIndex
+                        })
                         : nodeTitle}
                     </span>
                   </div>
@@ -527,7 +528,8 @@ FileThemeNodeContentRenderer.propTypes = {
   parentNode: PropTypes.shape({}), // Needed for dndManager
   // Drop target
   canDrop: PropTypes.bool,
-  isOver: PropTypes.bool.isRequired
+  isOver: PropTypes.bool.isRequired,
+  contextId: PropTypes.string
 };
 
 export default FileThemeNodeContentRenderer;

@@ -2,6 +2,7 @@ import React from 'react';
 import { observer, inject } from 'mobx-react';
 import { injectGlobal } from 'styled-components';
 import SplitPane from 'react-split-pane';
+import Redirect from 'react-router-dom/Redirect';
 import ChromeLikeTab from '../tabs/chromeLikeTab';
 import Flex from '../../components/flex';
 import Header from '../header';
@@ -9,11 +10,11 @@ import Slider from '../slider';
 import TabList from '../tabs/tab_list';
 import TabContainer from '../tabs/tab_container';
 import Task from '../../module/task';
+import Login from '../../module/user/login';
 
 import store from '../store';
-import appStore, { UserStore } from './store';
+import appStore from './store';
 
-store.registerModule('USER', UserStore);
 store.registerModule('APP', appStore);
 /* eslint-disable */
 injectGlobal`
@@ -82,7 +83,7 @@ injectGlobal`
 `;
 /* eslint-enable */
 
-const Home = ({ APP }) => (
+const Home = ({ APP, USER }) => (!USER.isLoggedIn() ? <Redirect to="/login" /> : (
   <Flex h="100%">
     <SplitPane split="vertical" minSize={160} maxSize={400} defaultSize={248}>
       <Slider />
@@ -90,7 +91,9 @@ const Home = ({ APP }) => (
         <Header />
         <Flex column full>
           <TabList origin="task" bgc="rgba(0,0,0,.05)" h="42px" hc="flex-end" pl="14px">
-            {APP.tabs.map(tab => <ChromeLikeTab key={tab} title={tab} />)}
+            {APP.tabs.size > 0 ? APP.tabs.entries().map(tab => (
+              <ChromeLikeTab key={tab[0]} title={tab[1].title} onClose={() => { APP.closeTab(tab[0]); }} />
+            )) : null}
           </TabList>
           <TabContainer
             full
@@ -99,11 +102,11 @@ const Home = ({ APP }) => (
             bt="1px solid rgba(0,0,0,.15)"
             mt="-2px"
           >
-            {APP.tabs.map(tab => <Task key={tab} />)}
+            {APP.tabs.size > 0 ? APP.tabs.entries().map(tab => <Task key={tab} />) : null}
           </TabContainer>
         </Flex>
       </Flex>
     </SplitPane>
-  </Flex>);
+  </Flex>));
 
-export default inject('APP')(observer(Home));
+export default inject('APP', 'USER')(observer(Home));

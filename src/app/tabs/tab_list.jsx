@@ -33,13 +33,13 @@ class TabList extends Component {
     const {
       children, origin, defaultIndex, ...rest
     } = this.props;
-    return (
+    return children ? (
       <Flex {...rest}>
         {isTypeOf(children) !== 'array'
           ? [this.setChildren(children)]
           : children.map((child, i) => this.setChildren(child, i))}
       </Flex>
-    );
+    ) : null;
   }
 }
 

@@ -4,24 +4,26 @@ import Flex from '../components/flex'
 
 export default class Portal extends Component {
   constructor(props) {
-    super(props)
-    this.el = document.createElement('div')
-    this.el.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:99;')
+    super(props);
+    this.el = document.createElement('div');
+    this.el.setAttribute('id', 'portal');
+    this.el.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:99;');
   }
 
   componentDidMount() {
     document.body.appendChild(this.el)
   }
 
-  componentWillMount() {
+  componentWillUnmount() {
     console.log('here?', this.el)
-    // document.body.removeChild(this.el)
+    document.body.removeChild(this.el);
   }
 
   render() {
     return createPortal(
       <Flex hc vc bgc="rgba(0,0,0,.7)" w="100%" h="100%">
         <Flex
+          nonOverflow
           w={this.props.width}
           h={this.props.height}
           bgc="#fff"

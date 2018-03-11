@@ -6,6 +6,9 @@ import Title from '../../components/title';
 import IconClose from '../../components/icon/close';
 
 const Oflex = Flex.extend`
+  &.on {
+    z-index: 1;
+  }
   &.on > div:first-child {
     background: #fafafa;
     border-bottom-color: #fafafa;
@@ -13,7 +16,7 @@ const Oflex = Flex.extend`
 `;
 
 const ChromeLikeTab = ({
-  avatar, active, title, closeable, ...rest
+  avatar, active, title, onClose, ...rest
 }) => (
     <Oflex rela h="80%" inline {...rest}>
       <Flex
@@ -27,11 +30,11 @@ const ChromeLikeTab = ({
         bgc={active ? '#fafafa' : '#f2f2f2'}
         z={active ? '1' : null}
       />
-      <Flex hc w="90%" z="1">
+      <Flex hc z="1" pl="12px" pr="6px">
         {avatar && <Base.Img src={avatar} mari="6px" male="4px" />}
         <Title>{title}</Title>
-        {closeable && (
-          <Button no-border pl="6px" pr="6px">
+        {onClose && (
+          <Button no-border pl="6px" pr="6px" onClick={onClose}>
             <IconClose />
           </Button>
         )}

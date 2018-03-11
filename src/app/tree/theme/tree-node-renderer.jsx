@@ -30,22 +30,24 @@ class FileThemeTreeNodeRenderer extends Component {
       getPrevRow, // Delete from otherProps
       node, // Delete from otherProps
       path, // Delete from otherProps
+      contextId,
       ...otherProps
     } = this.props;
 
     return connectDropTarget(<div {...otherProps} className="node">
       {Children.map(children, child =>
-          cloneElement(child, {
-            isOver,
-            canDrop,
-            draggedNode,
-            lowerSiblingCounts,
-            listIndex,
-            swapFrom,
-            swapLength,
-            swapDepth
-          }))}
-      </div> // eslint-disable-line
+        cloneElement(child, {
+          isOver,
+          canDrop,
+          draggedNode,
+          lowerSiblingCounts,
+          listIndex,
+          swapFrom,
+          swapLength,
+          swapDepth,
+          contextId
+        }))}
+    </div> // eslint-disable-line
     ); // eslint-disable-line
   }
 }
@@ -79,7 +81,9 @@ FileThemeTreeNodeRenderer.propTypes = {
   // used in dndManager
   getPrevRow: PropTypes.func.isRequired,
   node: PropTypes.shape({}).isRequired,
-  path: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])).isRequired
+  path: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])).isRequired,
+
+  contextId: PropTypes.string
 };
 
 export default FileThemeTreeNodeRenderer;

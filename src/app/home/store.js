@@ -1,9 +1,10 @@
 import { types, flow, getSnapshot, getParent, applySnapshot } from 'mobx-state-tree';
+import ShortId from 'shortid';
 import { sliderPaneWidth, outPutPaneHeight } from '../../config';
 import dataFetch from '../../helpers/data_fetch';
 
 const {
-  model, number, maybe, string, array, enumeration, union, late, boolean, optional
+  model, number, maybe, string, array, enumeration, union, late, boolean, optional, map
 } = types;
 
 export const localStore = window.localStorage;
@@ -16,6 +17,10 @@ export const UIParameter = model({
 export const KeyValueType = model({
   key: string,
   value: string
+});
+
+export const TabType = model({
+  title: string
 });
 
 export const TableFieldsType = model({
@@ -66,7 +71,8 @@ function* fetchAndUpdate(state, fetchUrl, defaultValue) {
 /* eslint-enable */
 
 export const AppType = model({
-  tabs: array(string),
+  tabs: optional(map(TabType), {}),
+  nowTab: maybe(string),
   popup: optional(boolean, false),
   sliderPaneWidth: maybe(number),
   outPutPaneHeight: maybe(number),
@@ -74,8 +80,15 @@ export const AppType = model({
   message: maybe(string)
 }).actions(self => ({
   newTab() {
-    const lastIndex = self.tabs[self.tabs.length - 1].split('$')[1];
-    self.tabs.push(`tmp$${Number(lastIndex) + 1}`);
+    self.tabs.set(ShortId(), { title: '新建任务[临时]' });
+  },
+
+  activeTab(id) {
+    self.nowTab = id;
+  },
+
+  closeTab(id) {
+    self.tabs.delete(id);
   },
 
   popupOpen() {
@@ -100,48 +113,19 @@ export const AppType = model({
 
   updateBySnapshot(key, snapshot) {
     applySnapshot(self[key], snapshot);
+  },
+
+  afterCreate() {
+    self.newTab();
+    self.activeTab(self.tabs.keys()[0]);
   }
 })).views(self => ({
   getSnapshot(key) {
     return getSnapshot(self[key]);
   }
 }));
-
-export const UserType = model({
-  userName: maybe(string),
-  password: maybe(string),
-  isLoggedIn: optional(boolean, false),
-  state: optional(union(enumeration('state', ['pending', 'loading', 'done']), number), 'pending'),
-  message: maybe(string)
-}).actions(self => ({
-
-  doLogin: flow(function* f() {
-    self.state = 'pending';
-    const { data, error, message } = yield dataFetch('POST /userLogin', {
-      userName: self.userName,
-      passWord: self.password
-    });
-    if (error) {
-      self.state = error;
-      self.message = message || 'Unknown interface error';
-    }
-    self.isLoggedIn = true;
-    self.state = 'done';
-  }),
-
-  set(key, value) {
-    self[key] = value;
-  }
-})).views(self => ({
-  getSnapshot(key) {
-    return getSnapshot(self[key]);
-  }
-}));
-
-export const UserStore = UserType.create({});
 
 export default AppType.create({
-  tabs: ['tmp$1'],
   sliderPaneWidth: localStore.getItem('sliderPaneWidth') || sliderPaneWidth,
   outPutPaneHeight: localStore.getItem('outPutPaneHeight') || outPutPaneHeight,
   state: 'pending'

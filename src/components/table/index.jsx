@@ -1,166 +1,85 @@
+import 'react-virtualized/styles.css';
 import React, { Component } from 'react';
-import { Grid, List, ScrollSync, AutoSizer } from 'react-virtualized';
-import scrollbarSize from 'dom-helpers/util/scrollbarSize';
-import tail from 'lodash/tail';
-import Portal from '../../app/portal';
+import { injectGlobal } from 'styled-components';
+import { Grid, AutoSizer, ScrollSync } from 'react-virtualized';
 import Flex from '../flex';
-import Base from '../base';
-import Button from '../button';
 
-const columnWidth = 75;
-const columnCount = 50;
-const height = 300;
-const overscanColumnCount = 0;
-const overscanRowCount = 5;
-const rowHeight = 40;
-const rowCount = 100;
-
-class Table extends Component {
-  _renderBodyCell = ({ columnIndex, key, rowIndex, style }) => {
-    if (columnIndex < 1) {
-      return;
-    }
-
-    return this._renderLeftSideCell({ columnIndex, key, rowIndex, style });
+/* eslint-disable */
+injectGlobal`
+  .ReactVirtualized__Table__headerColumn {
+    
   }
+`;
+/* eslint-enable */
 
-  _renderHeaderCell = ({ columnIndex, key, rowIndex, style }) => {
-    if (columnIndex < 1) {
-      return;
-    }
-
-    return this._renderLeftHeaderCell({ columnIndex, key, rowIndex, style });
-  }
-
-  _renderLeftHeaderCell = ({ columnIndex, key, style }) => {
-    return (
-      <div key={key} style={style}>
-        {`C${columnIndex}`}
-      </div>
-    );
-  }
-
-  _renderLeftSideCell = ({ columnIndex, key, rowIndex, style }) => {
-    return (
-      <div key={key} style={style}>
-        {`R${rowIndex}, C${columnIndex}`}
-      </div>
-    );
-  }
-
+export default class Table extends Component {
+  _noRowsRenderer = () => (<Flex>no data!</Flex>)
+  _headRender = ({ columnIndex, key, style }) => (
+    <Flex
+      hc
+      pl="10px"
+      pr="10px"
+      key={key}
+      style={style}
+      br={this.props.columnLine && '1px solid #ebebeb'}
+      bb={this.props.columnLine && '1px solid #ebebeb'}
+    >
+      {this.props.columns[columnIndex]}
+    </Flex>
+  )
+  _bodyRender = ({ columnIndex, key, rowIndex, style }) => (
+    <Flex
+      hc
+      key={key}
+      style={style}
+      pl="10px"
+      pr="10px"
+      bt={!this.props.columnLine && '1px solid #ebebeb'}
+      br={this.props.columnLine && '1px solid #ebebeb'}
+      bb={this.props.columnLine && '1px solid #ebebeb'}
+    >
+      {this.props.data[rowIndex][columnIndex]}
+    </Flex>
+  )
   render() {
-    const { columns, renderBodyCell, renderHeaderCell } = this.props;
+    const { columns, data, noRowsRenderer, headerColor, rowHeight, overscanColumnCount, overscanRowCount } = this.props;
     return (
-      <Flex full>
-        <ScrollSync>
-          {({
-            clientHeight,
-            clientWidth,
-            onScroll,
-            scrollHeight,
-            scrollLeft,
-            scrollTop,
-            scrollWidth
-          }) => {
-            const x = scrollLeft / (scrollWidth - clientWidth);
-            const y = scrollTop / (scrollHeight - clientHeight);
-            console.log(clientWidth)
-            return (
-              <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: 0,
-                    top: 0
-                  }}
-                >
-                  <Grid
-                    cellRenderer={() => columns[0]}
-                    width={columnWidth}
-                    height={rowHeight}
-                    rowHeight={rowHeight}
-                    columnWidth={columnWidth}
-                    rowCount={1}
-                    columnCount={1}
-                  />
-                </div>
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: 0,
-                    top: rowHeight
-                  }}
-                >
-                  <Grid
-                    overscanColumnCount={overscanColumnCount}
-                    overscanRowCount={overscanRowCount}
-                    cellRenderer={this._renderLeftSideCell}
-                    columnWidth={columnWidth}
-                    columnCount={1}
-                    height={height - scrollbarSize()}
-                    rowHeight={rowHeight}
-                    rowCount={rowCount}
-                    scrollTop={scrollTop}
-                    width={columnWidth}
-                  />
-                </div>
-                <div>
-                  <AutoSizer disableHeight>
-                    {({ width }) => (
-                      <div>
-                        <div
-                          style={{
-                            height: rowHeight,
-                            width: width - scrollbarSize(),
-                          }}>
-                          <Grid
-                            columnWidth={columnWidth}
-                            columnCount={columnCount}
-                            height={rowHeight}
-                            overscanColumnCount={overscanColumnCount}
-                            cellRenderer={({
-                              columnIndex, key, rowIndex, style
-                            }) => renderHeaderCell && renderHeaderCell({
-                              columnIndex, key, rowIndex, style
-                            })}
-                            rowHeight={rowHeight}
-                            rowCount={1}
-                            scrollLeft={scrollLeft}
-                            width={width - scrollbarSize()}
-                          />
-                        </div>
-                        <div
-                          style={{
-                            height,
-                            width,
-                          }}>
-                          <Grid
-                            columnWidth={columnWidth}
-                            columnCount={columnCount}
-                            height={height}
-                            onScroll={onScroll}
-                            overscanColumnCount={overscanColumnCount}
-                            overscanRowCount={overscanRowCount}
-                            cellRenderer={({
-                              columnIndex, key, rowIndex, style
-                            }) => renderBodyCell && renderBodyCell({
-                              columnIndex, key, rowIndex, style
-                            })}
-                            rowHeight={rowHeight}
-                            rowCount={rowCount}
-                            width={width}
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </AutoSizer>
-                </div>
-              </div>
-            );
-          }}
-        </ScrollSync>
-      </Flex>
+      <AutoSizer>
+        {({ width, height }) => (
+          <ScrollSync>
+            {({ scrollLeft, onScroll }) => [
+              <Grid
+                key="header"
+                rowCount={1}
+                height={rowHeight || 30}
+                overscanColumnCount={overscanColumnCount || 5}
+                overscanRowCount={overscanRowCount || 10}
+                columnWidth={90}
+                rowHeight={rowHeight || 30}
+                columnCount={columns.length}
+                cellRenderer={this._headRender}
+                width={width}
+                scrollLeft={scrollLeft}
+                containerStyle={{ background: headerColor || '#f2f2f2' }}
+              />,
+              <Grid
+                key="body"
+                onScroll={onScroll}
+                rowCount={data.length}
+                height={height}
+                noContentRenderer={this._noRowsRenderer}
+                overscanColumnCount={overscanColumnCount || 5}
+                overscanRowCount={overscanRowCount || 10}
+                columnWidth={90}
+                columnCount={columns.length}
+                rowHeight={rowHeight || 30}
+                cellRenderer={this._bodyRender}
+                width={width}
+              />
+            ]}
+          </ScrollSync>
+        )}
+      </AutoSizer>
     );
   }
 }
-export default Table;

@@ -1,4 +1,5 @@
 import { types, flow, getSnapshot, getParent, applySnapshot } from 'mobx-state-tree';
+import forIn from 'lodash/forIn';
 import dataFetch from '../../helpers/data_fetch';
 import store from '../store';
 
@@ -29,12 +30,11 @@ export const TaskTreeType = model({
 
 // table tree model
 export const TableTreeType = model({
-  name: string,
+  name: union(string, number),
   title: string,
   type: string,
   spec: maybe(array(string)),
-  fields: maybe(array(TableFieldsType)),
-  children: maybe(array(late(() => TableTreeType)))
+  children: optional(array(late(() => TableTreeType)), [])
 });
 
 export const DynamicFieldType = model({
@@ -70,26 +70,56 @@ export const SliderType = model({
     self.now = id;
   },
 
-  fetchAndUpdate: flow(function* fetchData(key, fetchUrl, defaultValue) {
-    console.log('000000=>', store.USER.isLoggedIn)
+  fetchAndUpdate: flow(function* fetchData(key, fetchUrl, param, options) {
     self.state = 'pending';
-    const { data, error, message } = yield dataFetch(fetchUrl);
+    const { data, error, message } = yield dataFetch(fetchUrl, {}, options);
     if (error) {
       self.state = error;
       self.message = message || 'Unknown interface error';
     }
-    self[key] = data || defaultValue;
+    forIn(data, (v, k) => {
+      const children = [];
+      v.map(m => children.push({
+        name: m.hiveTableId,
+        title: m.hiveTableName,
+        type: 'systable'
+      }));
+      self[key].push({
+        name: k,
+        title: k,
+        type: 'folder',
+        children
+      });
+    });
     self.state = 'done';
-    console.log('fetch done');
+  }),
+
+  fetchTableColumns: flow(function* f() {
+    // self.state = 'pending';
+    // const { data, error, message } = yield dataFetch('POST /getTableColumns', {}, options);
+    // if (error) {
+    //   self.state = error;
+    //   self.message = message || 'Unknown interface error';
+    // }
+    // forIn(data, (v, k) => {
+    //   const children = [];
+    //   v.map(m => children.push({
+    //     name: m.hiveTableId,
+    //     title: m.hiveTableName,
+    //     type: 'systable'
+    //   }));
+    //   self[key].push({
+    //     name: k,
+    //     title: k,
+    //     type: 'folder',
+    //     children
+    //   });
+    // });
+    // self.state = 'done';
   }),
 
   updateBySnapshot(key, snapshot) {
     applySnapshot(self[key], snapshot);
-  },
-
-  afterCreate() {
-    self.fetchAndUpdate('taskTree', 'GET /api/task_tree', []);
-    self.fetchAndUpdate('tableTree', 'GET /api/table_tree', []);
   }
 })).views(self => ({
   getSnapshot(key) {

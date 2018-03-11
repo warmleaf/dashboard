@@ -38,7 +38,7 @@ const Flex = styled.div`
   align-self: ${props => props.as || null};
   flex: ${props => (props.full ? 1 : null)};
   border-radius: ${props => props.round || null};
-  overflow: ${props => (props.hid ? 'hidden' : props.auto ? 'auto' : null)};
+  overflow: ${props => (props.nonOverflow ? 'hidden' : props.auto ? 'auto' : null)};
   transform: ${props => props.t || null};
   z-index: ${props => props.z || null};
   box-shadow: ${props => props.shadow || null};
@@ -49,11 +49,15 @@ const Flex = styled.div`
   &.on {
     background-color: ${props => props['hover-bgc'] || null};
     color: ${props => props['hover-co'] || null};
+    border-color: ${props => props['hover-bco'] || null};
     & .hco {
       color: ${props => props['hover-co'] || null} !important;
     }
     & .hbgc {
       background-color: ${props => props['hover-bgc'] || null} !important;
+    }
+    & .hbco {
+      border-color: ${props => props['hover-bco'] || null} !important;
     }
   }
 `;

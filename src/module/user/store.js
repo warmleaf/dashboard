@@ -41,7 +41,6 @@ export const UserType = model({
     if (window !== 'undefined') {
       window.localStorage.removeItem('isLoggedIn');
       self.userStatus = false;
-      console.log('do it');
     }
   },
 

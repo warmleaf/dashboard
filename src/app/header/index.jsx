@@ -72,16 +72,16 @@ class Header extends Component {
           <Href src="//my22years.com" size="14px" mr="20px">
             <IconHelp />
           </Href>
-          <Href src="//my22years.com" size="14px" mr="20px" hover-show="flex">
+          <Flex size="14px" mr="20px" hover-show="flex">
             <IconUser />
             <Flex hidden abs column className="hshow" tp="36px" rt="4px" bgc="#fff" z="9" shadow="-2px 4px 4px 0 rgba(0,0,0,.06)">
               <AvatarSimple title={'title'} sub={'sub'} />
               <Flex bt="1px solid #ebebeb" column pt="10px" pb="10px">
                 <Button size="14px" hover-bgc="rgba(0,0,0,.03)" lh="34px" no-border mb="10px">修改密码</Button>
-                <Button size="14px" hover-bgc="rgba(0,0,0,.03)" lh="34px" no-border>退出</Button>
+                <Button size="14px" hover-bgc="rgba(0,0,0,.03)" lh="34px" no-border onClick={this.props.USER.logout}>退出</Button>
               </Flex>
             </Flex>
-          </Href>
+          </Flex>
         </Flex>
       </Flex>
     );

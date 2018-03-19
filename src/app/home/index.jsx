@@ -84,7 +84,7 @@ injectGlobal`
 /* eslint-enable */
 
 const Home = ({ APP, USER }) => {
-  console.log(USER.isLoggedIn());
+  console.log(USER.isLoggedIn(), USER.userStatus);
   if (!USER.isLoggedIn()) {
     return <Redirect to="/login" />;
   }

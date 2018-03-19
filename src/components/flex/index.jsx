@@ -65,6 +65,9 @@ const Flex = styled.div`
     & .hbco {
       border-color: ${props => props['hover-bco'] || null} !important;
     }
+    & .hshow {
+      display: ${props => props['hover-show'] || null};
+    }
   }
 `;
 

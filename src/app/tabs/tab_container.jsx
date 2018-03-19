@@ -8,34 +8,36 @@ class TabContainer extends Component {
     super(props);
     this.displayName = 'TabContainer';
     this.state = {
-      selectedIndex: this.props.defaultIndex - 1 || 0
+      selected: this.props.defaultItem
     };
   }
 
   componentDidMount() {
     const { origin } = this.props;
     if (!origin) throw Error('origin is required');
-    channel.on(origin, selectedIndex => this.setState({ selectedIndex }));
+    channel.on(origin, selected => this.setState({ selected }));
   }
 
-  setChildren = (children, index) => {
-    let Index = 0;
-    if (index) Index = index;
-    return cloneElement(children, {
-      key: Index,
-      hidden: this.state.selectedIndex !== Index
-    });
-  };
+  componentWillReceiveProps(nexeProps) {
+    if (nexeProps.defaultItem !== this.props.defaultItem) {
+      this.setState({ selected: nexeProps.defaultItem });
+    }
+  }
+
+  setChildren = children => cloneElement(children, {
+    hidden: this.state.selected !== children.key
+  })
 
   render() {
     const {
       children, origin, defaultIndex, ...rest
     } = this.props;
+
     return children ? (
       <Flex {...rest}>
         {isTypeOf(children) !== 'array'
           ? [this.setChildren(children)]
-          : children.map((child, i) => this.setChildren(child, i))}
+          : children.map(child => this.setChildren(child))}
       </Flex>
     ) : null;
   }

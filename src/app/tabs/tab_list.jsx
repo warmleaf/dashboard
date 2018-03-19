@@ -8,24 +8,27 @@ class TabList extends Component {
     super(props);
     this.displayName = 'TabList';
     this.state = {
-      selectedIndex: this.props.defaultIndex - 1 || 0
+      selected: this.props.defaultItem
     };
     if (!this.props.origin) throw Error('origin is required');
   }
 
-  setChildren = (children, index) => {
-    let Index = 0;
+  componentWillReceiveProps(nexeProps) {
+    if (nexeProps.defaultItem !== this.props.defaultItem) {
+      this.setState({ selected: nexeProps.defaultItem });
+    }
+  }
+
+  setChildren = (children) => {
     const { beforeSelect, afterSelect, origin } = this.props;
-    if (index) Index = index;
     return cloneElement(children, {
-      key: Index,
       onClick: () => {
-        if (beforeSelect) beforeSelect(Index);
-        this.setState({ selectedIndex: Index });
-        channel.emit(origin, Index);
-        if (afterSelect) afterSelect(Index);
+        if (beforeSelect) beforeSelect(children.key);
+        this.setState({ selected: children.key });
+        channel.emit(origin, children.key);
+        if (afterSelect) afterSelect(children.key);
       },
-      className: this.state.selectedIndex === Index ? 'on' : null
+      className: this.state.selected === children.key ? 'on' : null
     });
   };
 
@@ -37,7 +40,7 @@ class TabList extends Component {
       <Flex {...rest}>
         {isTypeOf(children) !== 'array'
           ? [this.setChildren(children)]
-          : children.map((child, i) => this.setChildren(child, i))}
+          : children.map(child => this.setChildren(child))}
       </Flex>
     ) : null;
   }

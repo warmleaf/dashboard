@@ -2,15 +2,69 @@ import fetch from 'isomorphic-fetch';
 import isTypeOf from './is_type_of';
 import errorReport from './error_report';
 
-function checkStatus(response) {
+const en_Lang = {
+  UNAUTHORIZED: '认证过期，请重新认证(或登录)',
+  FORBIDDEN: '服务器拒绝访问',
+  NOT_FOUND: '服务器没有找到资源(或接口)',
+  METHOD_NOT_ALLOWED: ['拒绝访问，请使用', '方法请求'],
+  INTERNAL_SERVER_ERROR: '服务器未知错误',
+  FAILED_GATEWAY: '资源(或接口)服务没有(正确)响应',
+  SERVICE_UNAVAILABLE: '服务器繁忙',
+  BAD_REQUEST: '没有(或错误的)请求内容',
+  FAIL_TO_FETCH: [
+    '请求失败，未知故障',
+    '检查你的Internet网络连接是否正常',
+    '检查该请求链接是否存在',
+    '你可能跨域访问该站点(资源)，检查请求Response是否包含Content-Security-Policy/Access-Control-Allow-Origin属性',
+    '检查是否使用了非HTTP/HTTPS请求'
+  ],
+  PARSE_JSON_FAILED: '接口返回内容是非标准JSON格式',
+  EXECUTE_FETCH_FAILED: ['请求链接(', ')拼写错误'],
+  UNKNOW: '未知错误'
+};
+
+function checkStatus(response, lang) {
   if (response.status >= 200 && response.status < 300) {
     return response;
   }
-  errorReport(response);
-  return {
-    message: response.statusText || response.message,
-    error: response.status || response.error
-  };
+
+  const error = {};
+  const LANG = lang || en_Lang;
+
+  if (response.status === 400) {
+    error.message = LANG.BAD_REQUEST;
+    error.code = 499;
+  }
+  if (response.status === 401) {
+    error.message = LANG.UNAUTHORIZED;
+    error.code = 401;
+  }
+  if (response.status === 403) {
+    error.message = LANG.FORBIDDEN;
+    error.code = 499;
+  }
+  if (response.status === 404) {
+    error.message = LANG.NOT_FOUND;
+    error.code = 499;
+  }
+  if (response.status === 405) {
+    error.message = LANG.METHOD_NOT_ALLOWED;
+    error.code = 499;
+  }
+  if (response.status === 500) {
+    error.message = LANG.INTERNAL_SERVER_ERROR;
+    error.code = 599;
+  }
+  if (response.status === 502 || response.status === 504) {
+    error.message = LANG.FAILED_GATEWAY;
+    error.code = 599;
+  }
+  if (response.status === 503) {
+    error.message = LANG.SERVICE_UNAVAILABLE;
+    error.code = 599;
+  }
+
+  throw (error);
 }
 
 /**
@@ -24,37 +78,45 @@ function checkStatus(response) {
  *
  * error code:
  *
- *    701  json parse failed
- *    704  Failed to fetch
- *    705  Failed to execute 'fetch'
- *    700  Unknown Error
+ *    401      unauthorized
+ *    499      client error
+ *    599      server error
+ *    777      complex error
+ *    [number] customer defined error
  */
-function clearReport(error) {
+function clearReport({ code, message, ...rest }, lang) {
   let err = {};
-  switch (true) {
-    case /Unexpected token < in JSON at position/.test(error.message):
-      err = {
-        message: 'The returned data parsing failed to Json',
-        error: 701
-      };
-      break;
-    case /Failed to execute 'fetch' on 'Window': Failed to parse URL from/.test(error.message):
-      err = {
-        message: error.message.replace(/Failed to execute 'fetch' on 'Window': /, ''),
-        error: 705
-      };
-      break;
-    case /Failed to fetch/.test(error.message):
-      err = {
-        message: `${error.message}, check if your API Url is accessible`,
-        error: 704
-      };
-      break;
-    default:
-      err = {
-        message: 'Unknown Error',
-        error: 700
-      };
+  const LANG = lang || en_Lang;
+
+  if (code) {
+    err = { error: code, message };
+  } else {
+    switch (true) {
+      case /Unexpected token < in JSON at position/.test(message):
+        err = {
+          message: LANG.PARSE_JSON_FAILED,
+          error: 599
+        };
+        break;
+      case /Failed to execute 'fetch' on 'Window': Failed to parse URL from/.test(message):
+        err = {
+          message: `${LANG.EXECUTE_FETCH_FAILED[0]}${message.replace(/Failed to execute 'fetch' on 'Window': /, '')}${LANG.EXECUTE_FETCH_FAILED[1]}`,
+          error: 499
+        };
+        break;
+      case /Failed to fetch/.test(message):
+        err = {
+          message: LANG.FAIL_TO_FETCH[0],
+          info: LANG.FAIL_TO_FETCH,
+          error: 777
+        };
+        break;
+      default:
+        err = {
+          message: LANG.UNKNOW,
+          error: 777
+        };
+    }
   }
 
   errorReport(err);
@@ -161,15 +223,45 @@ function request(api, url, params, options) {
   }
 
   return fetch((api || '') + query, opt)
-    .catch(clearReport)
-    .then(checkStatus)
+    .then(res => checkStatus(res, opt.errorMsgLangType))
     .then((res) => {
-      if (res.error) {
-        return res;
+      switch (opt.parseType) {
+        case 'text':
+          return res.text();
+        case 'download':
+          res.blob().then((blob) => {
+            const reader = new FileReader();
+            const createObjectURL = window.URL.createObjectURL;
+            const revokeObjectURL = window.URL.revokeObjectURL;
+            reader.readAsText(blob);
+
+            const zhBlob = new Blob(res, { type: 'application/octet-stream' })
+
+            const disposition = res.headers.get('Content-Disposition');
+            const match = disposition ? disposition.match(/attachment; filename=(.+)/i) : null;
+            const filename = match && match.length > 1 ? match[1] : 'unknownfile';
+
+            let link = document.createElement('a');
+            document.body.appendChild(link);
+
+            const url = window.URL.createObjectURL(zhBlob);
+            link.href = url;
+            link.download = filename;
+            link.click();
+            window.URL.revokeObjectURL(url);
+            // const timer = setInterval(() => {
+            //   if (reader.result) {
+            //     clearInterval(timer);
+            //   }
+            // }, 6);
+          });
+          return { message: 'success' };
+        case 'json':
+        default:
+          return res.json();
       }
-      return res.json();
     })
-    .catch(clearReport);
+    .catch(err => clearReport(err, opt.errorMsgLangType));
 }
 
 export default request;

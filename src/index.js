@@ -1,3 +1,4 @@
+import './lib/windowErrorCatcher';
 import 'default-passive-events';
 import { createElement } from 'react';
 import ReactDOM from 'react-dom';

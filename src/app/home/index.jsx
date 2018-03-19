@@ -10,7 +10,7 @@ import Slider from '../slider';
 import TabList from '../tabs/tab_list';
 import TabContainer from '../tabs/tab_container';
 import Task from '../../module/task';
-import Login from '../../module/user/login';
+import Portal from '../portal';
 
 import store from '../store';
 import appStore from './store';
@@ -83,30 +83,57 @@ injectGlobal`
 `;
 /* eslint-enable */
 
-const Home = ({ APP, USER }) => (!USER.isLoggedIn() ? <Redirect to="/login" /> : (
-  <Flex h="100%">
-    <SplitPane split="vertical" minSize={160} maxSize={400} defaultSize={248}>
-      <Slider />
-      <Flex column full h="100%">
-        <Header />
-        <Flex column full>
-          <TabList origin="task" bgc="rgba(0,0,0,.05)" h="42px" hc="flex-end" pl="14px">
-            {APP.tabs.size > 0 ? APP.tabs.entries().map(tab => (
-              <ChromeLikeTab key={tab[0]} title={tab[1].title} onClose={() => { APP.closeTab(tab[0]); }} />
-            )) : null}
-          </TabList>
-          <TabContainer
-            full
-            origin="task"
-            bgc="#fafafa"
-            bt="1px solid rgba(0,0,0,.15)"
-            mt="-2px"
-          >
-            {APP.tabs.size > 0 ? APP.tabs.entries().map(tab => <Task key={tab} />) : null}
-          </TabContainer>
+const Home = ({ APP, USER }) => {
+  console.log(USER.isLoggedIn());
+  if (!USER.isLoggedIn()) {
+    return <Redirect to="/login" />;
+  }
+
+  return (
+    <Flex h="100%">
+      {APP.message &&
+        <Portal notice>{APP.message}</Portal>
+      }
+      <SplitPane split="vertical" minSize={160} maxSize={400} defaultSize={248}>
+        <Slider />
+        <Flex column full h="100%">
+          <Header />
+          <Flex column full>
+            <TabList
+              origin="task"
+              bgc="rgba(0,0,0,.05)"
+              h="42px"
+              hc="flex-end"
+              pl="14px"
+              defaultItem={APP.nowTab}
+              beforeSelect={APP.activeTab}
+            >
+              {APP.tabs.size > 0 ? APP.tabs.entries().map(tab => (
+                <ChromeLikeTab
+                  key={tab[0]}
+                  title={tab[1].title}
+                  onClose={(e) => {
+                    e.stopPropagation();
+                    APP.closeTab(tab[0]);
+                  }}
+                />
+              )) : null}
+            </TabList>
+            <TabContainer
+              full
+              origin="task"
+              bgc="#fafafa"
+              bt="1px solid rgba(0,0,0,.15)"
+              mt="-2px"
+              defaultItem={APP.nowTab}
+            >
+              {APP.tabs.size > 0 ? APP.tabs.entries().map(tab => <Task key={tab[0]} />) : null}
+            </TabContainer>
+          </Flex>
         </Flex>
-      </Flex>
-    </SplitPane>
-  </Flex>));
+      </SplitPane>
+    </Flex>
+  );
+};
 
 export default inject('APP', 'USER')(observer(Home));

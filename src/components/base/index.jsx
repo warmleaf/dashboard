@@ -6,7 +6,7 @@ import styled from "styled-components";
  * @param {string[]} CSSProperties
  * @returns 
  */
-function withCssProps(dom) {
+function withCssProps(dom, isOutLine) {
   return styled[dom]`
     align-content: ${(props) => props['alco'] || null};
     align-items: ${(props) => props['alit'] || null};
@@ -278,6 +278,7 @@ function withCssProps(dom) {
     voice-stress: ${(props) => props['vost'] || null};
     voice-volume: ${(props) => props['vovo'] || null};
     white-space-treatment: ${(props) => props['whsptr'] || null};
+    white-space: ${(props) => props['whsp'] || null};
     widows: ${(props) => props.widows || null};
     width: ${(props) => props.width || null};
     word-break: ${(props) => props['wobr'] || null};
@@ -289,6 +290,10 @@ function withCssProps(dom) {
     writing-mode: ${(props) => props['wrmo'] || null};
     z-index: ${(props) => props['z'] || null};
     zoom: ${(props) => props.zoom || null};
+
+    &:focus {
+      outline: ${isOutLine ? 'none' : null};
+    }
   `
 }
 
@@ -346,7 +351,7 @@ export default {
   I: withCssProps('i'),
   Iframe: withCssProps('iframe'),
   Img: withCssProps('img'),
-  Input: withCssProps('input'),
+  Input: withCssProps('input', true),
   Ins: withCssProps('ins'),
   Kbd: withCssProps('kbd'),
   Keygen: withCssProps('keygen'),

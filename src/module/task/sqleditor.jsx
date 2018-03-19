@@ -35,6 +35,7 @@ const SqlEditor = ({ tabId, query, ...rest }) => (<AceEditor
         }
         return true;
       });
+      console.log(lines[range.end.row])
       selectedText += lines[range.end.row].substring(0, range.end.column);
     }
 

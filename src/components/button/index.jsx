@@ -5,6 +5,7 @@ const Button = styled.button`
   font-size: ${props => props.size || null};
   width: ${props => props.w || null};
   height: ${props => props.h || null};
+  line-height: ${props => props.lh || null};
   margin-top: ${props => props.mt || null};
   margin-right: ${props => props.mr || null};
   margin-bottom: ${props => props.mb || null};
@@ -21,21 +22,23 @@ const Button = styled.button`
   color: ${props =>
     (props.disabled
       ? 'rgba(0,0,0,.3)'
-      : props.co || props.primary ? '#fff' : props.theme.primaryText || '#000')};
+      : props.co || (props.primary ? '#fff' : props.theme.primaryText || '#000'))};
   background-color: ${props =>
     (props.disabled
       ? 'rgba(0,0,0,.03)'
-      : props.bc || props.primary ? props.theme.primaryColor : 'transparent')};
+      : props.bgc || (props.primary ? props.theme.primaryColor : 'transparent'))};
   border-radius: ${props => (props.round ? (props.round === true ? '200px' : props.round) : null)};
   outline: none;
   cursor: pointer;
   flex: ${props => (props.full ? 1 : null)};
   text-align: center;
   align-items: center;
+  justify-content: ${props => (props.vc === true ? 'center' : props.vc)};
   transition: all 200ms;
   :hover {
     background-color: ${props => props['hover-bgc'] || null};
     color: ${props => props['hover-co'] || null};
+    box-shadow: ${props => props['hover-shadow'] || null};
     & .hco {
       color: ${props => props['hover-co'] || null} !important;
     }

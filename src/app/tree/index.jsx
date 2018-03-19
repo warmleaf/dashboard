@@ -5,6 +5,8 @@ import IconFolderClose from '../../components/icon/folderclose';
 import IconCode from '../../components/icon/code';
 import IconFile from '../../components/icon/file';
 import IconView from '../../components/icon/view';
+import DataBaseView from '../../components/icon/database';
+import DataTableView from '../../components/icon/datatable';
 
 export default class Tree extends Component {
   constructor(props) {
@@ -28,10 +30,12 @@ export default class Tree extends Component {
         return <IconCode color="#BE42FA" />;
       case 'timingTask':
         return <IconCode color="#2DD7C3" />;
+      case 'database':
+        return <DataBaseView color="#78A0FF" />;
       case 'systable':
-        return <IconFile color="#BE42FA" />;
+        return <DataTableView color="#BE42FA" />;
       case 'usrtable':
-        return <IconFile color="#2DD7C3" />;
+        return <DataTableView color="#2DD7C3" />;
       case 'view':
         return <IconView color="#BE42FA" />;
       default:
@@ -47,8 +51,9 @@ export default class Tree extends Component {
     console.log('data =>', data)
     return (
       <SortableTree
+        onlyExpandSearchedNodes
+        rowHeight={26}
         contextId={contextId}
-        style={{ width: '100%' }}
         treeData={treeData}
         onChange={(update) => {
           this.setState({ treeData: update });

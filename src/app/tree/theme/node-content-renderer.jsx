@@ -6,13 +6,27 @@ import theme from '../../../theme.default';
 
 /* eslint-disable  */
 injectGlobal`
+.rst__virtualScrollOverride {
+  outline: none;
+}
+.react-contextmenu-wrapper {
+  height: 100%;
+}
+
+.react-contextmenu-item--selected {
+  background-color: rgba(0,0,0,.03);
+  color: #6991FF;
+}
+
 .rowWrapper {
   height: 100%;
+  display: flex;
+  justify-items: center;
   box-sizing: border-box;
-  cursor: move;
 
   &:hover {
-    opacity: 0.7;
+    cursor: pointer;
+    background-color: rgba(0,0,0,.2);
   }
 
   &:active {
@@ -130,21 +144,17 @@ injectGlobal`
   padding: 0;
   z-index: 2;
   position: absolute;
-  top: 45%;
-  width: 30px;
-  height: 30px;
-  transform: translate3d(-50%, -50%, 0);
+  top: 9px;
   cursor: pointer;
 
   &::after {
+    outline: none;
     content: '';
     position: absolute;
-    transform-origin: 7px 4px;
-    transform: translate3d(-50%, -20%, 0);
+    top: 2px;
     border: solid transparent 5px;
-    border-left-width: 4px;
-    border-right-width: 4px;
     border-top-color: gray;
+    transition: transform 200ms;
   }
 
   &:hover::after {
@@ -153,16 +163,11 @@ injectGlobal`
 
   &:focus {
     outline: none;
-
-    &::after {
-      filter: drop-shadow(0 0 1px #83bef9) drop-shadow(0 0 1px #83bef9)
-        drop-shadow(0 0 1px #83bef9);
-    }
   }
 }
 
 .expandButton::after {
-  transform: translate3d(-50%, -20%, 0) rotateZ(-90deg);
+  transform: translate(4px, -2px) rotate(-90deg);
 }
 
 /**
@@ -409,16 +414,18 @@ class FileThemeNodeContentRenderer extends Component {
               style={{
                 left: (lowerSiblingCounts.length - 0.7) * scaffoldBlockPxWidth
               }}
-              onClick={() =>
-                toggleChildrenVisibility({
-                  node,
-                  path,
-                  treeIndex
-                })}
             />
           )}
-        <ContextMenuTrigger id="table_context" collect={() => node}>
-          <div className={`rowWrapper${!canDrag ? ' rowWrapperDragDisabled' : ''}${isSearchFocus ? ' rowSearchFocus' : ''}`}>
+        <ContextMenuTrigger id={node.type !== 'database' ? 'table_context' : null} collect={() => ({ node, parentNode })}>
+          <div
+            className={`rowWrapper${!canDrag ? ' rowWrapperDragDisabled' : ''}${isSearchFocus ? ' rowSearchFocus' : ''}`}
+            onClick={() =>
+              toggleChildrenVisibility({
+                node,
+                path,
+                treeIndex
+              })}
+          >
             {/* Set the row preview to be used during drag and drop */}
             {connectDragPreview(<div style={{ display: 'flex' }}>
               {scaffold}

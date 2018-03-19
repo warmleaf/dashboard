@@ -5,6 +5,10 @@ const Flex = styled.div`
   position: ${props => (props.abs ? 'absolute' : props.rela ? 'relative' : null)};
   flex-direction: ${props => (props.column ? 'column' : null)};
   width: ${props => props.w || null};
+  top: ${props => props.tp || null};
+  right: ${props => props.rt || null};
+  left: ${props => props.lt || null};
+  bottom: ${props => props.bm || null};
   min-width: ${props => props.miw || null};
   max-width: ${props => props.maw || null};
   height: ${props => props.h || null};
@@ -44,12 +48,14 @@ const Flex = styled.div`
   box-shadow: ${props => props.shadow || null};
   font-size: ${props => props.size || null};
   box-sizing: border-box;
+  cursor: ${props => props.cur || null};
 
   &:hover,
   &.on {
     background-color: ${props => props['hover-bgc'] || null};
     color: ${props => props['hover-co'] || null};
     border-color: ${props => props['hover-bco'] || null};
+    display: ${props => props['hover-show'] || null};
     & .hco {
       color: ${props => props['hover-co'] || null} !important;
     }

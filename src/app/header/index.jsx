@@ -11,6 +11,7 @@ import IconUser from '../../components/icon/user';
 import Href from '../href';
 import Status from './status';
 import Logo from '../logo';
+import AvatarSimple from '../../components/avatar-simple';
 
 import store from '../store';
 import HeaderStore from './store';
@@ -37,15 +38,15 @@ class Header extends Component {
           <Observer>
             {() => (
               <Status
-              mr="20px"
-              size={24}
-              percent={Math.random()*100 || this.props.PRESTO.percentage}
-              tips={[
-                "0-25|ok",
-                "26-50|normal",
-                "51-75|height",
-                "76-100|trouble"
-              ]} />
+                mr="20px"
+                size={24}
+                percent={Math.random() * 100 || this.props.PRESTO.percentage}
+                tips={[
+                  "0-25|ok",
+                  "26-50|normal",
+                  "51-75|height",
+                  "76-100|trouble"
+                ]} />
             )}
           </Observer>
           <Href
@@ -71,8 +72,15 @@ class Header extends Component {
           <Href src="//my22years.com" size="14px" mr="20px">
             <IconHelp />
           </Href>
-          <Href src="//my22years.com" size="14px" mr="20px">
+          <Href src="//my22years.com" size="14px" mr="20px" hover-show="flex">
             <IconUser />
+            <Flex hidden abs column className="hshow" tp="36px" rt="4px" bgc="#fff" z="9" shadow="-2px 4px 4px 0 rgba(0,0,0,.06)">
+              <AvatarSimple title={'title'} sub={'sub'} />
+              <Flex bt="1px solid #ebebeb" column pt="10px" pb="10px">
+                <Button size="14px" hover-bgc="rgba(0,0,0,.03)" lh="34px" no-border mb="10px">修改密码</Button>
+                <Button size="14px" hover-bgc="rgba(0,0,0,.03)" lh="34px" no-border>退出</Button>
+              </Flex>
+            </Flex>
           </Href>
         </Flex>
       </Flex>
@@ -80,4 +88,4 @@ class Header extends Component {
   }
 }
 
-export default inject('PRESTO')(observer(withTheme(Header)));
+export default inject('PRESTO', 'USER')(observer(withTheme(Header)));

@@ -37,12 +37,13 @@ class BigTable extends Component {
     );
   }
 
-  _renderLeftSideCell = ({ key, rowIndex, style }) => (
+  _renderLeftSideCell = ({ key, rowIndex, style }) => 
+  this.props.data[rowIndex]map((d, i) => (
     <div key={key} style={style}>
       {console.log(this.props.data[rowIndex])}
-      {this.props.data[rowIndex]}
+      {this.props.data[rowIndex]map()}
     </div>
-  )
+  ))
 
   render() {
     const { columns, renderBodyCell, renderHeaderCell, data } = this.props;

@@ -19,6 +19,11 @@ export const KeyValueType = model({
   value: string
 });
 
+export const PopupStateType = model({
+  id: maybe(union(string, number)),
+  name: maybe(union(string, number))
+});
+
 export const TabType = model({
   title: string
 });
@@ -73,34 +78,61 @@ function* fetchAndUpdate(state, fetchUrl, defaultValue) {
 export const AppType = model({
   tabs: optional(map(TabType), {}),
   nowTab: maybe(string),
-  popup: optional(boolean, false),
+  popup: optional(string, 'close'),
+  popupState: optional(PopupStateType, {}),
   sliderPaneWidth: maybe(number),
   outPutPaneHeight: maybe(number),
-  state: union(enumeration('state', ['pending', 'loading', 'done']), number),
+  state: optional(enumeration('state', [
+    'pending',
+    'loading',
+    'done',
+    'error',
+    'success',
+    'warning',
+    'info',
+    'initial'
+  ]), 'initial'),
   message: maybe(string)
 }).actions(self => ({
   newTab() {
-    self.tabs.set(ShortId(), { title: '新建任务[临时]' });
+    const Id = ShortId();
+    self.tabs.set(Id, { title: '新建任务[临时]' });
+    self.activeTab(Id);
   },
 
   activeTab(id) {
     self.nowTab = id;
+    console.log(self.nowTab)
+  },
+
+  stateChange(state) {
+    self.state = state;
+  },
+
+  setMessage(message) {
+    self.message = message;
   },
 
   closeTab(id) {
     self.tabs.delete(id);
+    const lastTabId = self.tabs.keys()[self.tabs.size - 1];
+    console.log(self.nowTab, id)
+    if (self.nowTab === id) {
+      console.log('active')
+      self.activeTab(lastTabId);
+    }
   },
 
-  popupOpen() {
-    if (!self.popup) { self.popup = true; }
+  popupOpen(id, state) {
+    if (self.popup !== id) { self.popup = id; }
+    self.popupState = state;
   },
 
-  popupClose() {
-    if (self.popup) { self.popup = false; }
+  popupClose(id) {
+    if (self.popup === id) { self.popup = 'close'; }
   },
 
   fetchAndUpdate: flow(function* fetchData(key, fetchUrl, defaultValue) {
-    console.log('000000=>', getParent(self))
     self.state = 'pending';
     const { data, error, message } = yield dataFetch(fetchUrl);
     if (error) {
@@ -117,7 +149,6 @@ export const AppType = model({
 
   afterCreate() {
     self.newTab();
-    self.activeTab(self.tabs.keys()[0]);
   }
 })).views(self => ({
   getSnapshot(key) {

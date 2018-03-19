@@ -3,8 +3,9 @@ import styled from 'styled-components';
 import Link from 'react-router-dom/Link';
 
 function willCss(dom) {
-  return styled(dom)`
+  return styled(dom) `
     transition: all 200ms;
+    position: ${props => props.pos || null};
     display: ${props => (props.inline ? 'inline-flex' : 'flex')};
     color: ${props => props.co || '#000'};
     text-decoration: ${props => props.decoration || 'none'};
@@ -18,6 +19,7 @@ function willCss(dom) {
     font-size: ${props => props.size || null};
     z-index: ${props => props.z || null};
     :hover {
+      display: ${props => props['hover-show'] || null};
       background-color: ${props => props['hover-bgc'] || null};
       color: ${props => props['hover-co'] || null};
       & .hco {
@@ -25,6 +27,9 @@ function willCss(dom) {
       }
       & .hbgc {
         background-color: ${props => props['hover-bgc'] || null} !important;
+      }
+      & .hshow {
+        display: ${props => props['hover-show'] || null};
       }
     }
   `;

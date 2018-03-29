@@ -23,6 +23,7 @@ const SqlEditor = ({ tabId, query, ...rest }) => (<AceEditor
   onSelectionChange={(editor) => {
     const range = editor.getRange();
     const lines = editor.doc.$lines;
+    if (lines.length === 0 || lines[0] === '') return;
     let selectedText = null;
 
     if (range.start.row === range.end.row) {
@@ -35,7 +36,7 @@ const SqlEditor = ({ tabId, query, ...rest }) => (<AceEditor
         }
         return true;
       });
-      console.log(lines[range.end.row])
+
       selectedText += lines[range.end.row].substring(0, range.end.column);
     }
 

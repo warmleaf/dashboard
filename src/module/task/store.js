@@ -51,11 +51,11 @@ export const queryType = model({
     } else {
       self.selectedQueries = self.queries.get(id);
     }
-    console.log(self.selectedQueries);
   },
 
   execQuery: flow(function* f(num) {
     self.state = 'pending';
+    self.isDFUpdate = 'loading';
     const rowNum = typeof num === 'number' ? { rowNum: num } : null;
     const data = yield dataFetch('POST /prestoHome/querySql', {
       sql: self.selectedQueries,
@@ -132,7 +132,6 @@ export const queryType = model({
   }
 })).views(self => ({
   getSnapshot(key) {
-    console.log(key)
     return getSnapshot(self[key]);
   },
   getQueries(id) {

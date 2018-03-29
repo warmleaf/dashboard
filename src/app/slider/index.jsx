@@ -100,68 +100,70 @@ class Slider extends Component {
             </Flex>
             <Flex key="table" full rela h="100%">
               <Observer>
-                {() => (<TwoSidePane
-                  split="horizontal"
-                  maxSize={400}
-                  minSize={this.props.tableField.ifFieldExist() ? 43 : 0}
-                  defaultSize={this.props.tableField.ifFieldExist() ? 400 : 0}
-                  primary="second"
-                >
-                  <Flex full column h="100%" w="100%">
-                    <SearchBar
-                      value={this.props.database.search}
-                      onChange={(e) => { this.props.database.setSearch(e.target.value); }}
-                      reload={this.props.database.doFetch}
-                      new={this.props.newTab}
-                    />
-                    <Flex full h="100%" w="100%">
-                      {this.props.databaseState === 'loading' ?
-                        <IconSpinner style={{ fontSize: '50px' }} /> :
-                        <Observer>
-                          {() => (<Tree
-                            contextId="table"
-                            searchString={this.props.database.search}
-                            data={this.props.database.data}
-                            // onChange={snapshot => SLIDER.updateBySnapshot('tableTree', snapshot)}
-                            onClick={(e, { node }) => {
-                              if (node.type !== 'database') {
-                                this.props.tableField.doFetch(node.name);
-                              }
-                            }}
-                          />)}
-                        </Observer>
-                      }
+                {() => (
+                  <TwoSidePane
+                    split="horizontal"
+                    maxSize={400}
+                    minSize={this.props.tableField.ifFieldExist() ? 43 : 0}
+                    defaultSize={this.props.tableField.ifFieldExist() ? 400 : 0}
+                    primary="second"
+                  >
+                    <Flex full column h="100%" w="100%">
+                      <SearchBar
+                        value={this.props.database.search}
+                        onChange={(e) => { this.props.database.setSearch(e.target.value); }}
+                        reload={this.props.database.doFetch}
+                        new={this.props.newTab}
+                      />
+                      <Flex full h="100%" w="100%">
+                        {this.props.databaseState === 'loading' ?
+                          <IconSpinner style={{ fontSize: '50px' }} /> :
+                          <Observer>
+                            {() => (<Tree
+                              contextId="table"
+                              searchString={this.props.database.search}
+                              data={this.props.database.data}
+                              // onChange={snapshot => SLIDER.updateBySnapshot('tableTree', snapshot)}
+                              onClick={(e, { node }) => {
+                                if (node.type !== 'database') {
+                                  this.props.tableField.doFetch(node.name);
+                                }
+                              }}
+                            />)}
+                          </Observer>
+                        }
+                      </Flex>
                     </Flex>
-                  </Flex>
-                  <Observer>
-                    {() => (
-                      <div>
-                        <SearchBar full w="100%" />
-                        <Flex full h="100%">
-                          <Table
-                            style={{ height: '100%' }}
-                            fixedRowCount={1}
-                            columnWidth={75}
-                            rowHeight={40}
-                            columns={['字段', '类型', '扩展字段', '描述']}
-                            data={this.props.tableField.isUpdate &&
-                              this.props.tableField.data.records}
-                            styleHeadGrid={{
-                              lineHeight: '40px',
-                              boxSizing: 'border-box',
-                              color: 'rgba(255,255,255,.3)'
-                            }}
-                            styleBodyGrid={{
-                              lineHeight: '40px',
-                              margin: '0 15px',
-                              boxSizing: 'border-box',
-                              color: 'rgba(255,255,255,.6)'
-                            }}
-                          />
-                        </Flex>
-                      </div>)}
-                  </Observer>
-                </TwoSidePane>)}
+                    <Observer>
+                      {() => (
+                        <div>
+                          <SearchBar full w="100%" />
+                          <Flex full h="100%">
+                            <Table
+                              style={{ height: '100%' }}
+                              fixedRowCount={1}
+                              columnWidth={75}
+                              rowHeight={40}
+                              columns={['字段', '类型', '扩展字段', '描述']}
+                              data={this.props.tableField.isUpdate &&
+                                this.props.tableField.data.records}
+                              styleHeadGrid={{
+                                lineHeight: '40px',
+                                boxSizing: 'border-box',
+                                color: 'rgba(255,255,255,.3)'
+                              }}
+                              styleBodyGrid={{
+                                lineHeight: '40px',
+                                margin: '0 15px',
+                                boxSizing: 'border-box',
+                                color: 'rgba(255,255,255,.6)'
+                              }}
+                            />
+                          </Flex>
+                        </div>)}
+                    </Observer>
+                  </TwoSidePane>
+                )}
               </Observer>
               <TableContext />
             </Flex>

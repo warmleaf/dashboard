@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
-import SplitPane from 'react-split-pane';
+import { observer, inject, Observer } from 'mobx-react';
+import TwoSidePane from '../../app/two-side-pane';
 import Result from './result';
 import SqlEditor from './sqleditor';
 import Flex from '../../components/flex';
@@ -9,7 +9,6 @@ import Button from '../../components/button';
 import IconPlay from '../../components/icon/play';
 import IconPause from '../../components/icon/pause';
 import Separator from '../../components/separator';
-import TaskPost from './post';
 
 class Task extends Component {
   componentDidMount() {
@@ -99,12 +98,22 @@ class Task extends Component {
           </Flex>
         </Flex>
         <Flex rela full>
-          <SplitPane split="horizontal" maxSize={400} defaultSize={248} primary="second">
-            <SqlEditor />
-            <Flex full bt="1px solid rgba(0,0,0,.08)" w="100%">
-              <Result />
-            </Flex>
-          </SplitPane>
+          <Observer>
+            {() => (
+              <TwoSidePane
+                split="horizontal"
+                maxSize={400}
+                minSize={0}
+                defaultSize={query.isDPUpdate !== 'initial' ? 248 : 0}
+                primary="second"
+              >
+                <SqlEditor />
+                <Flex full bt="1px solid rgba(0,0,0,.08)" w="100%">
+                  <Result />
+                </Flex>
+              </TwoSidePane>
+            )}
+          </Observer>
         </Flex>
       </Flex>
     );

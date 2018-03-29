@@ -278,6 +278,7 @@ export default class MultiGrid extends PureComponent {
     } = this.props;
 
     // scrollTop and scrollLeft props are explicitly filtered out and ignored
+    if (data.length === 0 && !columns) return null;
     if (data.length === 0 && columns.length === 0) return null;
     const { scrollLeft, scrollTop } = this.state;
 

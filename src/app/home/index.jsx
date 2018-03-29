@@ -3,19 +3,16 @@ import { observer, inject } from 'mobx-react';
 import { injectGlobal } from 'styled-components';
 import SplitPane from 'react-split-pane';
 import Redirect from 'react-router-dom/Redirect';
-import ChromeLikeTab from '../tabs/chromeLikeTab';
 import Flex from '../../components/flex';
 import Header from '../header';
 import Slider from '../slider';
-import TabList from '../tabs/tab_list';
-import TabContainer from '../tabs/tab_container';
-import Task from '../../module/task';
 import Portal from '../portal';
 
-import store from '../store';
-import appStore from './store';
+import Tabs from '../tabs';
+import Recover from '../recover';
+import TaskPost from '../../module/task/post';
+import ResultAll from '../../module/task/result_all';
 
-store.registerModule('APP', appStore);
 /* eslint-disable */
 injectGlobal`
     html {
@@ -83,52 +80,46 @@ injectGlobal`
 `;
 /* eslint-enable */
 
-const Home = ({ APP, USER }) => {
-  console.log(USER.isLoggedIn(), USER.userStatus);
-  if (!USER.isLoggedIn()) {
-    return <Redirect to="/login" />;
+function getPopup(id) {
+  switch (id) {
+    case 'taskPost':
+      return <TaskPost />;
+    case 'recover':
+      return <Recover />;
+    case 'resultAll':
+      return <ResultAll />;
+    case null:
+    case undefined:
+    case '':
+    default:
+      return null;
   }
+}
+
+const Home = ({ app, user }) => {
+  if (!user.isLoggedIn()) return <Redirect to="/login" />;
 
   return (
     <Flex h="100%">
-      {APP.message &&
-        <Portal notice>{APP.message}</Portal>
+      {app.message &&
+        <Portal
+          notice
+          type={app.state}
+          beforeUnmount={() => {
+            app.stateChange('done');
+            app.setMessage(null);
+          }}
+        >
+          {app.message}
+        </Portal>
       }
+      {getPopup(app.popup)}
       <SplitPane split="vertical" minSize={160} maxSize={400} defaultSize={248}>
         <Slider />
         <Flex column full h="100%">
           <Header />
           <Flex column full>
-            <TabList
-              origin="task"
-              bgc="rgba(0,0,0,.05)"
-              h="42px"
-              hc="flex-end"
-              pl="14px"
-              defaultItem={APP.nowTab}
-              beforeSelect={APP.activeTab}
-            >
-              {APP.tabs.size > 0 ? APP.tabs.entries().map(tab => (
-                <ChromeLikeTab
-                  key={tab[0]}
-                  title={tab[1].title}
-                  onClose={(e) => {
-                    e.stopPropagation();
-                    APP.closeTab(tab[0]);
-                  }}
-                />
-              )) : null}
-            </TabList>
-            <TabContainer
-              full
-              origin="task"
-              bgc="#fafafa"
-              bt="1px solid rgba(0,0,0,.15)"
-              mt="-2px"
-              defaultItem={APP.nowTab}
-            >
-              {APP.tabs.size > 0 ? APP.tabs.entries().map(tab => <Task key={tab[0]} />) : null}
-            </TabContainer>
+            <Tabs />
           </Flex>
         </Flex>
       </SplitPane>
@@ -136,4 +127,4 @@ const Home = ({ APP, USER }) => {
   );
 };
 
-export default inject('APP', 'USER')(observer(Home));
+export default inject('app', 'user')(observer(Home));

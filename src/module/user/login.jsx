@@ -8,30 +8,26 @@ import Logo from '../../app/logo';
 import ResponsiveImg from '../../components/responsiveImg';
 import Portal from '../../app/portal';
 
-import store from '../../app/store';
-import UserStore from './store';
-
-store.registerModule('USER', UserStore);
-const Login = ({ USER, APP }) => {
+const Login = ({ user, app }) => {
   if (window !== 'undefined') {
     window.document.addEventListener('keyup', (e) => {
       if (e.key === 'Enter' || e.code === 'Enter' || e.keyCode === 13) {
-        USER.doLogin();
+        user.doLogin();
       }
     });
   }
-  return (USER.isLoggedIn() ? <Redirect to="/" /> : (
+  return (user.isLoggedIn() ? <Redirect to="/" /> : (
     <ResponsiveImg background type={2} src="http://ouax1fn2c.bkt.clouddn.com/lee-campbell-86958-unsplash.jpg" hc vc h="100%">
-      {APP.message &&
+      {app.message &&
         <Portal
           notice
-          type={APP.state}
+          type={app.state}
           beforeUnmount={() => {
-            APP.stateChange('done');
-            APP.setMessage('');
+            app.stateChange('done');
+            app.setMessage('');
           }}
         >
-          {APP.message}
+          {app.message}
         </Portal>
       }
       <Flex column hc vc bgc="rgba(0,0,0,.6)" round="2px">
@@ -42,7 +38,7 @@ const Login = ({ USER, APP }) => {
         <Flex column w="400px" p="40px 50px 50px">
           <Base.Input
             onChange={(e) => {
-              USER.set('userName', e.target.value);
+              user.set('userName', e.target.value);
             }}
             border="0"
             bora="2px"
@@ -54,7 +50,7 @@ const Login = ({ USER, APP }) => {
             placeholder="用户名/邮箱"
           />
           <Base.Input
-            onChange={(e) => { USER.set('password', e.target.value); }}
+            onChange={(e) => { user.set('password', e.target.value); }}
             border="0"
             bora="2px"
             height="40px"
@@ -65,11 +61,11 @@ const Login = ({ USER, APP }) => {
             pari="15px"
             placeholder="输入密码"
           />
-          <Button vc bgc="#509BFF" size="16px" co="#fff" h="40px" round="4px" onClick={USER.doLogin}>登录</Button>
+          <Button vc bgc="#509BFF" size="16px" co="#fff" h="40px" round="4px" onClick={user.doLogin}>登录</Button>
         </Flex>
       </Flex>
     </ResponsiveImg>
   ));
 };
 
-export default inject('APP', 'USER')(observer(Login));
+export default inject('app', 'user')(observer(Login));

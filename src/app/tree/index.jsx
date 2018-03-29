@@ -12,6 +12,7 @@ export default class Tree extends Component {
   constructor(props) {
     super(props);
     this.isNodeMoved = null;
+    this.beforeIngoreUpdate = this.props.ingoreUpdateOnece;
     this.state = {
       treeData: this.props.data,
       searchFocusIndex: 0
@@ -44,11 +45,11 @@ export default class Tree extends Component {
   };
 
   render() {
-    const { searchString, data, onClick, contextId } = this.props;
+    const { searchString, onClick, contextId } = this.props;
     const { searchFocusIndex, treeData } = this.state;
     const searchMethod = ({ node, searchQuery }) =>
       searchQuery && node.title.toLowerCase().indexOf(searchQuery.toLowerCase()) > -1;
-    console.log('data =>', data)
+    console.log('data =>', treeData)
     return (
       <SortableTree
         onlyExpandSearchedNodes
@@ -71,7 +72,7 @@ export default class Tree extends Component {
         theme={theme}
         generateNodeProps={rowInfo => ({
           icons: [this.matchIcon(rowInfo.node.type)],
-          onClick: e => onClick(e, rowInfo)
+          onClick: e => onClick && onClick(e, rowInfo)
         })}
         onContextMenu={e => console.log(e)}
         searchMethod={searchMethod}

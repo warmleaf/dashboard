@@ -141,10 +141,10 @@ TableContext.propTypes = {
 };
 
 export default inject(s => ({
-  getQueries: s.QUERY.getQueries,
-  selectQuery: s.QUERY.selectQuery,
-  execQuery: s.QUERY.execQuery,
-  updateQuery: s.QUERY.updateQuery,
-  popupOpen: s.APP.popupOpen,
-  tabId: s.APP.nowTab
+  getQueries: s.query.getQueries,
+  selectQuery: s.query.selectQuery,
+  execQuery: s.query.execQuery,
+  updateQuery: s.query.updateQuery,
+  popupOpen: s.app.popupOpen,
+  tabId: s.tabs.activeTabId
 }))(observer(TableContext));

@@ -257,6 +257,12 @@ export default class MultiGrid extends PureComponent {
     );
   }
 
+  handleScroll = ({ target }) => {
+    const { scrollTop, scrollLeft } = target;
+
+    Grid.handleScrollEvent({ scrollTop, scrollLeft });
+  }
+
   render() {
     const {
       onScroll,
@@ -278,38 +284,44 @@ export default class MultiGrid extends PureComponent {
     return (
       <AutoSizer>
         {({ width, height }) => (
-          <div style={this._containerOuterStyle}>
-            <div style={this._containerTopStyle}>
-              {this._renderTopLeftGrid(rest)}
-              {this._renderTopRightGrid({
-                ...rest,
-                width,
-                height,
-                onScroll,
-                scrollLeft
-              })}
+          <Scrollbars
+            autoHide
+            style={{ width, height }}
+            onScroll={this.handleScroll}
+          >
+            <div style={this._containerOuterStyle}>
+              <div style={this._containerTopStyle}>
+                {this._renderTopLeftGrid(rest)}
+                {this._renderTopRightGrid({
+                  ...rest,
+                  width,
+                  height,
+                  onScroll,
+                  scrollLeft
+                })}
+              </div>
+              <div style={this._containerBottomStyle}>
+                {this._renderBottomLeftGrid({
+                  ...rest,
+                  width,
+                  height,
+                  onScroll,
+                  scrollTop
+                })}
+                {this._renderBottomRightGrid({
+                  ...rest,
+                  width,
+                  height,
+                  onScroll,
+                  onSectionRendered,
+                  scrollLeft,
+                  scrollToColumn,
+                  scrollToRow,
+                  scrollTop
+                })}
+              </div>
             </div>
-            <div style={this._containerBottomStyle}>
-              {this._renderBottomLeftGrid({
-                ...rest,
-                width,
-                height,
-                onScroll,
-                scrollTop
-              })}
-              {this._renderBottomRightGrid({
-                ...rest,
-                width,
-                height,
-                onScroll,
-                onSectionRendered,
-                scrollLeft,
-                scrollToColumn,
-                scrollToRow,
-                scrollTop
-              })}
-            </div>
-          </div>
+          </Scrollbars>
         )}
       </AutoSizer>
     );

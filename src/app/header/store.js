@@ -2,15 +2,11 @@ import { types, flow, getSnapshot } from 'mobx-state-tree';
 import dataFetch from '../../helpers/data_fetch';
 import { getLocalDateTime } from '../../lib/datetime';
 
-if (process.env.NODE_ENV === 'development') {
-  require('../../_mock_/get_presto_status'); // eslint-disable-line global-require
-}
-
 const {
   model, number, optional, string, maybe
 } = types;
 
-export const PrestoStateType = model({
+const PrestoType = model({
   runningQueries: optional(number, 0),
   blockedQueries: optional(number, 0),
   lastCacheTime: optional(number, 0),
@@ -21,21 +17,12 @@ export const PrestoStateType = model({
 
   fetchAndUpdate: flow(function* fetchData() {
     self.state = 'pending';
-    const { data, error, message } = yield dataFetch('GET /getPrestoStatus');
-    if (error) {
-      self.state = `${error}`;
-      self.message = message || 'Unknown interface error';
-    }
-    try {
-      console.log(data);
-      self.runningQueries = data.runningQueries;
-      self.blockedQueries = data.blockedQueries;
-      self.lastCacheTime = data.lastCacheTime;
-      self.percentage = data.percentage;
-    } catch (err) {
-      self.state = `${err}`;
-      self.message = 'field parse fail';
-    }
+    const data = yield dataFetch('GET /prestoHome/getPrestoStatus');
+
+    self.runningQueries = data.runningQueries;
+    self.blockedQueries = data.blockedQueries;
+    self.lastCacheTime = data.lastCacheTime;
+    self.percentage = data.percentage;
     self.state = 'done';
   })
 })).views(self => ({
@@ -47,4 +34,4 @@ export const PrestoStateType = model({
   }
 }));
 
-export default PrestoStateType.create({});
+export default PrestoType;

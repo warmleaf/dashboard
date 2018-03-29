@@ -984,7 +984,7 @@ babel-register@^6.26.0:
     mkdirp "^0.5.1"
     source-map-support "^0.4.15"
 
-babel-runtime@6.26.0, babel-runtime@^6.18.0, babel-runtime@^6.22.0, babel-runtime@^6.26.0:
+babel-runtime@6.26.0, babel-runtime@^6.11.6, babel-runtime@^6.18.0, babel-runtime@^6.22.0, babel-runtime@^6.26.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-6.26.0.tgz#965c7058668e82b55d7bfe04ff2337bc8b5647fe"
   dependencies:
@@ -1439,7 +1439,7 @@ clap@^1.0.9:
   dependencies:
     chalk "^1.1.3"
 
-classnames@^2.2.0, classnames@^2.2.3, classnames@^2.2.5:
+classnames@^2.2.0, classnames@^2.2.3, classnames@^2.2.4, classnames@^2.2.5:
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.2.5.tgz#fb3801d453467649ef3603c7d61a02bd129bde6d"
 
@@ -4351,6 +4351,10 @@ lodash.cond@^4.3.0:
   version "4.5.2"
   resolved "https://registry.yarnpkg.com/lodash.cond/-/lodash.cond-4.5.2.tgz#f471a1da486be60f6ab955d17115523dd1d255d5"
 
+lodash.debounce@^4.0.8:
+  version "4.0.8"
+  resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
+
 lodash.defaults@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/lodash.defaults/-/lodash.defaults-4.2.0.tgz#d09178716ffea4dde9e5fb7b37f6f0802274580c"
@@ -5569,7 +5573,7 @@ prop-types-exact@^1.1.1:
     has "^1.0.1"
     object.assign "^4.1.0"
 
-prop-types@^15.5.0, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.6, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.5.9, prop-types@^15.6.0:
+prop-types@^15.5.0, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.6, prop-types@^15.5.7, prop-types@^15.5.9:
   version "15.6.0"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.0.tgz#ceaf083022fc46b4a35f69e13ef75aed0d639856"
   dependencies:
@@ -5577,7 +5581,7 @@ prop-types@^15.5.0, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.6,
     loose-envify "^1.3.1"
     object-assign "^4.1.1"
 
-prop-types@^15.6.1:
+prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1:
   version "15.6.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.1.tgz#36644453564255ddda391191fb3a125cbdf654ca"
   dependencies:
@@ -5826,6 +5830,14 @@ react-dom@^16.2.0:
     object-assign "^4.1.1"
     prop-types "^15.6.0"
 
+react-dropdown-tree-select@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/react-dropdown-tree-select/-/react-dropdown-tree-select-1.7.0.tgz#09c61953e8cff9846c5a1c42da907556d84e1608"
+  dependencies:
+    classnames "^2.2.5"
+    lodash.debounce "^4.0.8"
+    prop-types "^15.6.0"
+
 react-error-overlay@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-4.0.0.tgz#d198408a85b4070937a98667f500c832f86bd5d4"
@@ -5849,6 +5861,12 @@ react-infinite-calendar@^2.3.1:
     react-tiny-virtual-list "^2.0.0"
     react-transition-group "^1.1.3"
     recompose "^0.22.0"
+
+react-input-autosize@^2.1.2:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/react-input-autosize/-/react-input-autosize-2.2.1.tgz#ec428fa15b1592994fb5f9aa15bb1eb6baf420f8"
+  dependencies:
+    prop-types "^15.5.8"
 
 react-moment-proptypes@^1.5.0:
   version "1.5.0"
@@ -5935,6 +5953,14 @@ react-scripts@^1.1.0:
   optionalDependencies:
     fsevents "1.1.2"
 
+react-select@^1.0.0-rc.2:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/react-select/-/react-select-1.2.1.tgz#a2fe58a569eb14dcaa6543816260b97e538120d1"
+  dependencies:
+    classnames "^2.2.4"
+    prop-types "^15.5.8"
+    react-input-autosize "^2.1.2"
+
 react-sortable-tree-theme-file-explorer@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/react-sortable-tree-theme-file-explorer/-/react-sortable-tree-theme-file-explorer-1.1.2.tgz#513f1371524af0707486db4a1d9368e576109b31"
@@ -6002,7 +6028,16 @@ react-transition-group@^1.1.3:
     prop-types "^15.5.6"
     warning "^3.0.0"
 
-react-virtualized@^9.13.0, react-virtualized@^9.18.5:
+react-virtualized-select@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/react-virtualized-select/-/react-virtualized-select-3.1.3.tgz#e5c1fed5e493e3e5a628e53100e83d27cfd8c0ac"
+  dependencies:
+    babel-runtime "^6.11.6"
+    prop-types "^15.5.8"
+    react-select "^1.0.0-rc.2"
+    react-virtualized "^9.0.0"
+
+react-virtualized@^9.0.0, react-virtualized@^9.13.0, react-virtualized@^9.18.5:
   version "9.18.5"
   resolved "https://registry.yarnpkg.com/react-virtualized/-/react-virtualized-9.18.5.tgz#42dd390ebaa7ea809bfcaf775d39872641679b89"
   dependencies:

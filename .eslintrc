@@ -14,11 +14,29 @@
     "window": true
   },
   "rules": {
-    "comma-dangle": ["error", "never"],
+    "comma-dangle": [
+      "error",
+      "never"
+    ],
     "no-underscore-dangle": [
       "error",
-      { "allowAfterThis": true, "allowAfterSuper": true }
+      {
+        "allowAfterThis": true,
+        "allowAfterSuper": true
+      }
     ],
-    "no-param-reassign": ["error", { "props": false }]
+    "no-param-reassign": [
+      "error",
+      {
+        "props": false
+      }
+    ],
+    "array-callback-return": "warn",
+    "react/prop-types": [
+      2,
+      {
+        "skipUndeclared": true
+      }
+    ]
   }
 }

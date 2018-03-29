@@ -1,6 +1,7 @@
 import { types, flow, getSnapshot, getParent, applySnapshot } from 'mobx-state-tree';
 import forIn from 'lodash/forIn';
 import Shortid from 'shortid';
+import renderUidPidTypeTree from '../../lib/render_pid_type_tree';
 import dataFetch from '../../helpers/data_fetch';
 import store from '../store';
 import userStore from '../../module/user/store';
@@ -26,22 +27,9 @@ export const dataBaseType = model({
   data: []
 })).actions(self => ({
   doFetch: flow(function* f() {
-    self.state = 'pending';
+    self.state = 'loading';
     const cacheData = [];
-    const { data, error, isOk, ms, message } = yield dataFetch('POST /getDBTable', {});
-    if (error || isOk === 'no') {
-      if (error === 401) userStore.logout();
-      self.state = 'error';
-      self.message = message || ms || 'Unknown interface error';
-      return;
-    }
-
-    if (error === 401) {
-      appStore.stateChange('warning');
-      appStore.setMessage(message || ms);
-      store.USER.logout();
-      return;
-    }
+    const data = yield dataFetch('POST /prestoHome/getDBTable', {});
 
     forIn(data, (v, k) => {
       const children = [];
@@ -82,19 +70,7 @@ export const tableFieldType = model({
 })).actions(self => ({
   doFetch: flow(function* f(hiveTableId) {
     self.state = 'pending';
-    const { columns, error, message, ok, ms, records } = yield dataFetch('POST /getTableColumns', { hiveTableId });
-    if (!ok || ok === 'no') {
-      self.state = 'error';
-      self.message = ms || 'Unknown interface error';
-      return;
-    }
-
-    if (error === 401) {
-      appStore.stateChange('warning');
-      appStore.setMessage(message || ms);
-      store.USER.logout();
-      return;
-    }
+    const { columns, records } = yield dataFetch('POST /prestoHome/getTableColumns', { hiveTableId });
 
     self.data = { columns, records };
     self.isUpdate = Shortid();
@@ -119,43 +95,30 @@ export const tableFieldType = model({
 export const taskTreeType = model({
   state: optional(enumeration('state', ['pending', 'loading', 'done', 'error', 'initial']), 'initial'),
   error: maybe(string),
+  search: maybe(string),
   isUpdate: optional(string, 'initial')
 }).volatile(() => ({
   data: []
 })).actions(self => ({
   doFetch: flow(function* f() {
     self.state = 'pending';
-    const { data, error, isOk, ms, message } = yield dataFetch('POST /getDBTable', {});
-    if (error || isOk === 'no') {
-      self.state = 'error';
-      self.message = message || ms || 'Unknown interface error';
-      return;
-    }
+    const data = yield dataFetch('POST /taskHome/getTaskGroup', {});
 
-    if (error === 401) {
-      appStore.stateChange('warning');
-      appStore.setMessage(message || ms);
-      store.USER.logout();
-      return;
-    }
-
-    forIn(data, (v, k) => {
-      const children = [];
-      v.map(m => children.push({
-        name: m.hiveTableId,
-        title: m.hiveTableName,
-        type: 'systable'
-      }));
-      self.data.push({
-        name: k,
-        title: k,
-        type: 'database',
-        children
+    if (data) {
+      const tree = renderUidPidTypeTree(data, 0, (node) => {
+        node.title = node.name;
+        node.type = node.type === 1 ? 'folder' : node.type === 2 ? 'timingTask' : 'tempTask';
       });
-    });
-    self.isUpdate = Shortid();
-    self.state = 'done';
+      self.data = tree.children;
+      self.isUpdate = Shortid();
+      self.state = 'done';
+    }
   }),
+
+  setSearch(text) {
+    self.search = text;
+  },
+
   afterCreate() {
     self.doFetch();
   }

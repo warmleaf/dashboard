@@ -10,7 +10,11 @@ injectGlobal`
   .search{
     &.on,
     &:hover{
-      background-color: rgba(255,255,255,.5);
+      background-color: rgba(0,0,0,.5);
+
+      input {
+        color: rgba(255,255,255,.8)
+      }
     }
     input:focus {
       outline: none;
@@ -29,9 +33,7 @@ class Search extends PureComponent {
   }
 
   _changeHandle = (value) => {
-    this.setState({ value }, () => {
-      this.props.onChange(value);
-    });
+    this.setState({ value });
   }
 
   _changeFocus = (bool) => {

@@ -5,8 +5,8 @@ import isTypeOf from '../../lib/is_type_of';
 import Flex from '../../components/flex';
 import Base from '../../components/base';
 import Button from '../../components/button';
-import TabList from '../../app/tabs/tab_list';
-import TabContainer from '../../app/tabs/tab_container';
+import TabList from '../../components/tabs/tab_list';
+import TabContainer from '../../components/tabs/tab_container';
 import Table from '../../components/table';
 import ResultAll from './result_all';
 import IconSpinner from '../../components/icon/spinner';
@@ -42,7 +42,7 @@ const Result = ({
     tab: null,
     container: null
   };
-  console.log(query.dataPreview, query.dataPreview.get(tabId))
+
   if (!query.dataPreview.get(tabId)) return null;
   if (typeof query.dataPreview.get(tabId)[0] === 'string') {
     tabRender.tab = (
@@ -143,7 +143,6 @@ const Result = ({
 
   return (
     <Flex full column w="100%" >
-      <Observer>{() => (popup === 'ResultAll' && <ResultAll />)}</Observer>
       <Flex vc="space-between" hc bgc="#fff">
         <TabList origin="result" defaultItem={query.dataPreview.get(tabId)[0] && query.dataPreview.get(tabId)[0].queryId}>
           {tabRender.tab}
@@ -165,9 +164,9 @@ const Result = ({
 };
 
 export default inject(s => ({
-  query: s.QUERY,
-  tabId: s.APP.nowTab,
-  popup: s.APP.popup,
-  popupOpen: s.APP.popupOpen,
-  popupClose: s.APP.popupClose
+  query: s.query,
+  tabId: s.tabs.activeTabId,
+  popup: s.app.popup,
+  popupOpen: s.app.popupOpen,
+  popupClose: s.app.popupClose
 }))(observer(Result));

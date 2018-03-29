@@ -1,9 +1,9 @@
 import { types, flow, getSnapshot, getParent } from 'mobx-state-tree';
 import Shortid from 'shortid';
+import values from 'lodash/values';
 import dataFetch from '../../helpers/data_fetch';
 import { getLocalDateTime } from '../../lib/datetime';
 import store from '../../app/store';
-import appStore from '../../app/home/store';
 
 if (process.env.NODE_ENV === 'development') {
   require('../../_mock_/get_presto_status'); // eslint-disable-line global-require
@@ -13,17 +13,17 @@ const {
   model, number, optional, string, maybe, union, enumeration, array, map, boolean, reference
 } = types;
 
-export const QueryResultType = model({
+export const queryResultType = model({
   ok: optional(boolean, false),
   columns: optional(array(union(string, number)), []),
-  records: array(array(maybe(union(string, number)))),
-  queryId: union(string, number),
-  querySql: string,
+  records: maybe(array(array(maybe(union(string, number))))),
+  queryId: maybe(union(string, number)),
+  querySql: maybe(string),
   lineNumber: optional(number, 0),
   executeTime: optional(number, 0)
 });
 
-export const QueryType = model({
+export const queryType = model({
   queries: optional(map(string), {}),
   selectedQueries: optional(string, ''),
   queryResults: optional(map(string), {}),
@@ -35,6 +35,10 @@ export const QueryType = model({
   dataPreview: new Map(),
   dataFull: new Map()
 })).actions(self => ({
+
+  initQuery(id, query) {
+    self.queries.set(id, query);
+  },
 
   updateQuery(id, query) {
     self.queries.set(id, query);
@@ -51,27 +55,19 @@ export const QueryType = model({
   },
 
   execQuery: flow(function* f(num) {
-    console.log('start exec', self.selectedQueries);
     self.state = 'pending';
     const rowNum = typeof num === 'number' ? { rowNum: num } : null;
-    const { data, error, message, ms, isOk } = yield dataFetch('POST /querySql', {
+    const data = yield dataFetch('POST /prestoHome/querySql', {
       sql: self.selectedQueries,
+      queryToken: store.tabs.activeTabId,
       ...rowNum
     });
-    if (error === 401) {
-      store.USER.logout();
-      return;
-    }
-    if (isOk === 'no') {
-      appStore.stateChange('warning');
-      appStore.setMessage(message || ms || '未知错误');
-      return;
-    }
+
     if (num >= 35000) {
-      self.dataFull.set(appStore.nowTab, data);
+      self.dataFull.set(store.tabs.activeTabId, data);
       self.isDFUpdate = Shortid();
     } else {
-      self.dataPreview.set(appStore.nowTab, data);
+      self.dataPreview.set(store.tabs.activeTabId, data);
       self.isDPUpdate = Shortid();
     }
     self.state = 'done';
@@ -102,32 +98,29 @@ export const QueryType = model({
   }),
 
   explainDistributedSql: flow(function* f() {
-    self.state = 'pending';
-    const explainedSQL = yield dataFetch('POST /explianDistributedSql', {
+    self.state = 'loading';
+    const data = yield dataFetch('POST /prestoHome/explianDistributedSql', {
       sql: self.selectedQueries
     });
-    try {
-      let stringExpSql = '';
-      self.queryResults = [];
-      explainedSQL.map(({ records }) => {
-        records.map((sql) => {
-          stringExpSql += sql;
-        });
-      });
 
-      console.log(self.queryResults);
-      self.queryResults.push(String(stringExpSql));
-      console.log(self.queryResults);
-    } catch (err) {
-      self.state = 703;
-      self.message = `field parse fail: ${err.message}`;
-    }
+    self.dataPreview.set(store.tabs.activeTabId, data);
+    self.isDPUpdate = Shortid();
     self.state = 'done';
   }),
 
   formatSQL: flow(function* f(id) {
     self.state = 'pending';
-    const formattedSQL = yield dataFetch('POST /formatSql', {
+    const data = yield dataFetch('POST /prestoHome/formatSql', {
+      sql: self.selectedQueries
+    }, { parseType: 'text' });
+
+    self.updateQuery(id, data);
+    self.state = 'done';
+  }),
+
+  postTask: flow(function* f(id) {
+    self.state = 'pending';
+    const formattedSQL = yield dataFetch('POST /prestoHome/formatSql', {
       sql: self.selectedQueries
     }, { parseType: 'text' });
     self.updateQuery(id, formattedSQL);
@@ -150,4 +143,93 @@ export const QueryType = model({
   }
 }));
 
-export default QueryType.create({});
+export const taskPostType = model({
+  id: optional((string), ''),
+  taskName: optional((string), ''),
+  taskRemark: optional((string), ''),
+  userId: optional((string), ''),
+  taskSql: optional((string), ''),
+  isValid: optional((number), 1),
+  retry: optional((number), 1),
+  tasktimeStart: optional((string), ''),
+  tasktimeEnd: optional((string), ''),
+  state: optional(union(enumeration('state', ['pending', 'loading', 'done']), number), 'done'),
+}).volatile(() => ({
+  dataPreview: new Map(),
+  dataFull: new Map()
+})).actions(self => ({
+  update(key, value) {
+    self[key] = value;
+  }
+})).views(self => ({
+  getSnapshot(key) {
+    return self[key];
+  }
+}));
+
+export const frequencyType = model({
+  id: optional((string), ''),
+  taskName: optional((string), ''),
+  taskRemark: optional((string), ''),
+  userId: optional((string), ''),
+  taskSql: optional((string), ''),
+  isValid: optional((number), 1),
+  retry: optional((number), 1),
+  tasktimeStart: optional((string), ''),
+  tasktimeEnd: optional((string), ''),
+  state: optional(union(enumeration('state', ['pending', 'loading', 'done']), number), 'done'),
+}).volatile(() => ({
+  dataPreview: new Map(),
+  dataFull: new Map()
+})).actions(self => ({
+  update(key, value) {
+    self[key] = value;
+  },
+
+  doFetch: flow(function* f() {
+    self.state = 'loading';
+    const data = yield dataFetch('POST /taskHome/getFrequencyTypeAndWeek', {});
+
+    if (data) {
+      console.log(data);
+    }
+    self.state = 'done';
+  }),
+
+  afterCreate() {
+    self.doFetch();
+  }
+})).views(self => ({
+  getSnapshot(key) {
+    return self[key];
+  }
+}));
+
+export const timingTaskType = model({
+  isUpdate: optional(string, 'initial'),
+  state: optional(union(enumeration('state', ['pending', 'loading', 'done']), number), 'done')
+}).volatile(() => ({
+  data: []
+})).actions(self => ({
+
+  doFetch: flow(function* f() {
+    self.state = 'loading';
+    const data = yield dataFetch('POST /taskHome/taskList', {});
+
+    if (data) {
+      data.map((d, index) => {
+        self.data[index] = values(d);
+      });
+      self.isUpdate = Shortid();
+    }
+    self.state = 'done';
+  }),
+
+  afterCreate() {
+    self.doFetch();
+  }
+})).views(self => ({
+  getSnapshot(key) {
+    return self[key];
+  }
+}));

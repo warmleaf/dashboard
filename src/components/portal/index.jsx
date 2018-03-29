@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { createPortal } from 'react-dom';
-import Flex from '../components/flex';
-import Base from '../components/base';
-import IconError from '../components/icon/error';
-import IconSuccess from '../components/icon/success';
-import IconWarning from '../components/icon/warning';
-import IconInfo from '../components/icon/info';
+import Flex from '../flex';
+import Base from '../base';
+import IconError from '../icon/error';
+import IconSuccess from '../icon/success';
+import IconWarning from '../icon/warning';
+import IconInfo from '../icon/info';
 
 export default class Portal extends Component {
   constructor(props) {
@@ -40,10 +40,9 @@ export default class Portal extends Component {
 
   _timeOut = () => {
     const that = this;
-    const { beforeUnmount } = this.props;
     const timer = setTimeout(() => {
       document.body.removeChild(that.el);
-      if (beforeUnmount) beforeUnmount();
+      that.props.beforeUnmount();
       clearTimeout(timer);
     }, 2000);
   }

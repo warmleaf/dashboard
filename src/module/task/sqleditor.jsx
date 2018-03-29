@@ -46,7 +46,7 @@ const SqlEditor = ({ tabId, query, ...rest }) => (<AceEditor
 />);
 
 export default inject(s => ({
-  tabId: s.APP.nowTab,
-  query: s.QUERY
+  tabId: s.tabs.activeTabId,
+  query: s.query
 }))(observer(SqlEditor));
 

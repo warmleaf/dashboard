@@ -6,12 +6,12 @@ import Search from '../../components/search';
 import IconCycle from '../../components/icon/cycle';
 import IconPlus from '../../components/icon/plus';
 
-const SearchBar = ({ value, onChange, reload, add, theme }) => (
-  <Flex w="100%" as="start" hc pr="5px" pl="15px" pb="15px">
+const SearchBar = ({ value, reload, add, theme, ...rest }) => (
+  <Flex w="100%" as="start" hc p="15px 5px 15px 15px">
     <Search
       full
       value={value}
-      onChange={(v) => { onChange(v); }}
+      {...rest}
     />
     <Button
       no-border

@@ -13,13 +13,9 @@ import Status from './status';
 import Logo from '../logo';
 import AvatarSimple from '../../components/avatar-simple';
 
-import store from '../store';
-import HeaderStore from './store';
-
-store.registerModule('PRESTO', HeaderStore);
 class Header extends Component {
   componentDidMount() {
-    this.timer = setInterval(this.props.PRESTO.fetchAndUpdate, 10000000000);
+    this.timer = setInterval(this.props.presto.fetchAndUpdate, 10000000000);
   }
 
   componentWillUnmount() {
@@ -40,7 +36,7 @@ class Header extends Component {
               <Status
                 mr="20px"
                 size={24}
-                percent={Math.random() * 100 || this.props.PRESTO.percentage}
+                percent={Math.random() * 100 || this.props.presto.percentage}
                 tips={[
                   "0-25|ok",
                   "26-50|normal",
@@ -78,7 +74,7 @@ class Header extends Component {
               <AvatarSimple title={'title'} sub={'sub'} />
               <Flex bt="1px solid #ebebeb" column pt="10px" pb="10px">
                 <Button size="14px" hover-bgc="rgba(0,0,0,.03)" lh="34px" no-border mb="10px">修改密码</Button>
-                <Button size="14px" hover-bgc="rgba(0,0,0,.03)" lh="34px" no-border onClick={this.props.USER.logout}>退出</Button>
+                <Button size="14px" hover-bgc="rgba(0,0,0,.03)" lh="34px" no-border onClick={this.props.user.logout}>退出</Button>
               </Flex>
             </Flex>
           </Flex>
@@ -88,4 +84,4 @@ class Header extends Component {
   }
 }
 
-export default inject('PRESTO', 'USER')(observer(withTheme(Header)));
+export default inject('presto', 'user')(observer(withTheme(Header)));

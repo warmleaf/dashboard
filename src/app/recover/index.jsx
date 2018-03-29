@@ -28,7 +28,7 @@ const Recover = ({ popupClose, popupState, query }) => (
 );
 
 export default inject(s => ({
-  popupClose: s.APP.popupClose,
-  popupState: s.APP.popupState,
-  query: s.QUERY
+  popupClose: s.app.popupClose,
+  popupState: s.app.popupState,
+  query: s.query
 }))(observer(Recover));
